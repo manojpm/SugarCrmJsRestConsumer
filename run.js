@@ -2,7 +2,7 @@
  * Created by jack on 19/05/17.
  */
 //var Promise = require("bluebird");
-var SugarCrmJsRestConsumer = require('./index');
+var SugarCrmJsRestConsumer = require('./SugarCrmJsRestConsumer');
 
 console.log("initing...");
 var sugar = new SugarCrmJsRestConsumer();
