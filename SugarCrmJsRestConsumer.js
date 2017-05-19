@@ -39,6 +39,57 @@
         };
 
         /**
+         *
+         * @param {string} filter
+         */
+        this.getModules = function(filter)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if(!_.contains(['default', 'mobile', 'all'], filter))
+                {
+                    return reject(new Error("Unknown filter: " + filter));
+                }
+
+                var methodArgs = {
+                    session: session_id,
+                    filter: filter
+                };
+
+                var options = {
+                    method: "POST",
+                    uri: api_url,
+                    form: {
+                        method: "get_available_modules",
+                        input_type: "JSON",
+                        response_type: "JSON",
+                        rest_data: JSON.stringify(methodArgs)
+                    },
+                    headers: {
+                        'User-Agent': 'sugarcrm-js-rest-consumer'
+                    }
+                };
+
+                rp.post(options)
+                    .then(function(body)
+                    {
+                        if (!_.isUndefined(body)) {
+                            try {
+                                var response = JSON.parse(body);
+                                fulfill(response);
+                            } catch (e) {
+                                return reject(new Error("Unable to parse server response!"));
+                            }
+                        }
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(new Error("Request failed with status code: " + error.statusCode));
+                    });
+            });
+        };
+
+        /**
          * @return {Promise}
          */
         this.authenticate = function()
@@ -112,6 +163,8 @@
                 password: password
             }
         };
+
+
     }
 
     //----------------------------------------------------------------------------------------------------------------//

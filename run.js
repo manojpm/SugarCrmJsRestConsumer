@@ -15,8 +15,18 @@ sugar.authenticate()
     {
         console.log("Auth ok");
 
+        //getting list of modules
+        sugar.getModules('all')
+        .then(function(resp)
+        {
+            console.log("got modules");
+            console.log(resp);
 
-
+        })
+        .catch(function(error)
+        {
+            console.error(error);
+        });
     })
     .catch(function(error)
     {
