@@ -2,12 +2,26 @@
   "name": "sugarcrm-js-rest-consumer",
   "version": "0.0.1",
   "description": "SugarCRM REST API(v4.1) Client in node.js",
-  "repository": "https://github.com/adamjakab/SugarCrmRestConsumer",
-  "license": "MIT",
-  "devDependencies": {
-
+  "author": "Adam Jakab",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adamjakab/SugarCrmRestConsumer"
   },
+  "license": "MIT",
   "scripts": {
     "update-deps": "npm update"
-  }
+  },
+  "keywords": [
+    "sugarcrm",
+    "rest api",
+    "v4.1"
+  ],
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {},
+  "main": "index.js"
 }
