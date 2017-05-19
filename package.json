@@ -1,0 +1,13 @@
+{
+  "name": "sugarcrm-js-rest-consumer",
+  "version": "0.0.1",
+  "description": "SugarCRM REST API(v4.1) Client in node.js",
+  "repository": "https://github.com/adamjakab/SugarCrmRestConsumer",
+  "license": "MIT",
+  "devDependencies": {
+
+  },
+  "scripts": {
+    "update-deps": "npm update"
+  }
+}
