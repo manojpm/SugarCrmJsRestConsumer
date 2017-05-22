@@ -90,62 +90,107 @@
         };
 
         /**
+         *
+         * @param {string} [sid]
          * @return {Promise}
          */
-        this.authenticate = function()
+        this.authenticate = function(sid)
         {
             return new Promise(function(fulfill, reject)
             {
+                var options;
                 session_id = "";
 
-                var authArgs = {
-                    user_auth: {
-                        "user_name": username,
-                        "password": password,
-                        "encryption": 'PLAIN'
-                    },
-                    application: "SugarCRM JS Rest Consumer"
-                };
+                if (_.isEmpty(sid))
+                {
+                    var authArgs = {
+                        user_auth: {
+                            "user_name": username,
+                            "password": password,
+                            "encryption": 'PLAIN'
+                        },
+                        application: "SugarCRM JS Rest Consumer"
+                    };
 
-                var options = {
-                    method: "POST",
-                    uri: api_url,
-                    form: {
-                        method: "login",
-                        input_type: "JSON",
-                        response_type: "JSON",
-                        rest_data: JSON.stringify(authArgs)
-                    },
-                    headers: {
-                        'User-Agent': 'sugarcrm-js-rest-consumer'
-                    }
-                };
+                    options = {
+                        method: "POST",
+                        uri: api_url,
+                        form: {
+                            method: "login",
+                            input_type: "JSON",
+                            response_type: "JSON",
+                            rest_data: JSON.stringify(authArgs)
+                        },
+                        headers: {
+                            'User-Agent': 'sugarcrm-js-rest-consumer'
+                        }
+                    };
 
-                rp.post(options)
-                    .then(function(body)
-                    {
-                        if (!_.isUndefined(body)) {
-                            try {
-                                var response = JSON.parse(body);
-                            } catch (e) {
-                                return reject(new Error("Unable to parse server response!"));
+                    rp.post(options)
+                        .then(function(body)
+                        {
+                            if (!_.isUndefined(body)) {
+                                try {
+                                    var response = JSON.parse(body);
+                                } catch (e) {
+                                    return reject(new Error("Unable to parse server response!"));
+                                }
+
+                                if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"])) {
+                                    session_id = response["id"];
+                                }
                             }
 
-                            if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"])) {
-                                session_id = response["id"];
+                            if (_.isEmpty(session_id)) {
+                                return reject(new Error(response["name"] + ' - ' + response["description"]));
                             }
-                        }
 
-                        if (_.isEmpty(session_id)) {
-                            return reject(new Error(response["name"] + ' - ' + response["description"]));
-                        }
+                            fulfill();
+                        })
+                        .catch(function(error)
+                        {
+                            return reject(new Error("Request failed with status code: " + error.statusCode));
+                        });
+                } else {
 
-                        fulfill();
-                    })
-                    .catch(function(error)
-                    {
-                        return reject(new Error("Request failed with status code: " + error.statusCode));
-                    });
+                    options = {
+                        method: "POST",
+                        uri: api_url,
+                        form: {
+                            method: "seamless_login",
+                            input_type: "JSON",
+                            response_type: "JSON",
+                            rest_data: JSON.stringify({session: sid})
+                        },
+                        headers: {
+                            'User-Agent': 'sugarcrm-js-rest-consumer'
+                        }
+                    };
+
+                    rp.post(options)
+                        .then(function(body)
+                        {
+                            if (!_.isUndefined(body)) {
+                                try {
+                                    var response = parseInt(JSON.parse(body));
+                                    if(response === 1)
+                                    {
+                                        session_id = sid;
+                                        fulfill();
+                                    } else {
+                                        return reject(new Error("Invalid Session Id! Please log in again!"));
+                                    }
+                                } catch (e) {
+                                    return reject(new Error("Unable to parse server response!"));
+                                }
+                            }
+                        })
+                        .catch(function(error)
+                        {
+                            return reject(new Error("Request failed with status code: " + error.statusCode));
+                        });
+
+                }
             });
         };
 
@@ -156,11 +201,12 @@
         this.getConfig = function()
         {
             return {
-                api_url: api_url,
                 crm_url: crm_url,
                 api_version: api_version,
+                api_url: api_url,
                 username: username,
-                password: password
+                password: password,
+                session_id: session_id
             }
         };
 
