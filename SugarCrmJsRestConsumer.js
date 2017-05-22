@@ -6,9 +6,10 @@
  */
 (function()
 {
-    var rp = require('request-promise')
-        , _ = require('underscore')
-        , Promise = require("bluebird");
+    var  _ = require('underscore')
+        , Promise = require("bluebird")
+        , axios = require("axios")
+        ;
 
     /**
      * @constructor
@@ -226,6 +227,13 @@
         module.exports = SugarCrmJsRestConsumer;
     } else {
         root.SugarCrmJsRestConsumer = SugarCrmJsRestConsumer;
+    }
+
+    // AMD registration - copied from underscore
+    if (typeof define === 'function' && define.amd) {
+        define('SugarCrmJsRestConsumer', [], function() {
+            return SugarCrmJsRestConsumer;
+        });
     }
 
 }.call(this));
