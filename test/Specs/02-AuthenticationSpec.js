@@ -9,6 +9,7 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
             ;
 
         var sugar = new SugarCrmJsRestConsumer();
+        sugar.init(crm_url, crm_rest_version, username, password);
 
 
         describe("SugarCrmJsRestConsumer", function()
@@ -16,11 +17,8 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
 
             it("should be true", function()
             {
-                sugar.init(crm_url, crm_rest_version, username, password);
                 expect(true).toBeTruthy();
             });
-
-
 
 
         });
