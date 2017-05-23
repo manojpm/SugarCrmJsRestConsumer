@@ -5,7 +5,6 @@ define(['underscore', 'SugarCrmJsRestConsumer', 'axios', 'qs'],
             , crm_rest_version = 'v4_1'
             , username = 'user1'
             , password = 'user1'
-            , session_id = ''
             ;
 
         var sugar = new SugarCrmJsRestConsumer();
@@ -15,26 +14,40 @@ define(['underscore', 'SugarCrmJsRestConsumer', 'axios', 'qs'],
         describe("SugarCrmJsRestConsumer", function()
         {
 
-
-            it("should authenticate", function(done)
+            it("should authenticate with authenticate method (no sid)", function(done)
             {
+                sugar.authenticate()
+                    .then(function(sid)
+                    {
+                        //console.log("SID: " + sid);
+                        done();
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
 
+            it("should authenticate with simple post", function(done)
+            {
                 var authArgs = {
                     user_auth: {
                         "user_name": username,
                         "password": password,
                         "encryption": 'PLAIN'
                     },
-                    application: "SugarCRM JS Rest Consumer"
+                    application: "SugarCRM JS Rest Consumer Test"
                 };
 
 
                 sugar.post('login', authArgs)
-                    .then(function(resp){
-                        console.log(JSON.stringify(resp));
+                    .then(function(resp)
+                    {
                         done();
                     })
-                    .catch(function(err){
+                    .catch(function(err)
+                    {
                         done.fail(err);
                     })
                 ;

@@ -24,6 +24,14 @@
         var password = "";
         var session_id = "";
 
+        var AXIOS;
+
+        var xhr_timeout = 5000;
+        var xhr_headers = {
+            'User-Agent': 'sugarcrm-js-rest-consumer'
+        };
+
+
         /**
          *
          * @param {string} url
@@ -38,6 +46,13 @@
             api_url = crm_url + '/service/' + api_version + '/rest.php';
             username = user;
             password = pwd;
+
+            AXIOS = axios.create({
+                method: "post",
+                responseType: 'json',
+                timeout: xhr_timeout,
+                headers: xhr_headers
+            });
         };
 
         /**
@@ -97,9 +112,9 @@
          */
         this.authenticate = function(sid)
         {
+            var self = this;
             return new Promise(function(fulfill, reject)
             {
-                var options;
                 session_id = "";
 
                 if (_.isEmpty(sid))
@@ -113,56 +128,24 @@
                         application: "SugarCRM JS Rest Consumer"
                     };
 
-                    options = {
-                        method: "POST",
-                        url: api_url,
-                        data: {
-                            method: "login",
-                            input_type: "JSON",
-                            response_type: "JSON",
-                            rest_data: JSON.stringify(authArgs)
-                        },
-                        headers: {
-                            'User-Agent': 'sugarcrm-js-rest-consumer'
-                        }
-                    };
-
-                    axios(options)
-                        .then(function(body)
-                        {
-                            console.log(body);
+                    self.post('login', authArgs)
+                        .then(function(response) {
+                            if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"])) {
+                                session_id = response["id"];
+                            }
+                            if (_.isEmpty(session_id)) {
+                                throw new Error("No session id in response!");
+                            }
+                            fulfill(session_id);
                         })
-                        .catch(function(error)
-                        {
-                            console.error("ERR: " + error);
-                        });
+                        .catch(function(error) {
+                            return reject(error);
+                        })
+                    ;
+
+
 
                     /*
-                    rp.post(options)
-                        .then(function(body)
-                        {
-                            if (!_.isUndefined(body)) {
-                                try {
-                                    var response = JSON.parse(body);
-                                } catch (e) {
-                                    return reject(new Error("Unable to parse server response!"));
-                                }
-
-                                if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"])) {
-                                    session_id = response["id"];
-                                }
-                            }
-
-                            if (_.isEmpty(session_id)) {
-                                return reject(new Error(response["name"] + ' - ' + response["description"]));
-                            }
-
-                            fulfill();
-                        })
-                        .catch(function(error)
-                        {
-                            return reject(new Error("Request failed with status code: " + error.statusCode));
-                        });
                 } else {
 
                     options = {
@@ -218,15 +201,7 @@
         {
             return new Promise(function(fulfill, reject)
             {
-                var AX = axios.create({
-                    method: "post",
-                    responseType: 'json',
-                    /*maxContentLength: 2000,*/
-                    timeout: 5000,
-                    headers: {
-                        'User-Agent': 'sugarcrm-js-rest-consumer'
-                    }
-                });
+
 
                 var post_data = {
                     method: method,
@@ -235,7 +210,7 @@
                     rest_data: JSON.stringify(data)
                 };
 
-                AX.post(api_url, qs.stringify(post_data))
+                AXIOS.post(api_url, qs.stringify(post_data))
                     .then(function(response)
                     {
                         if(response.status == 200)
