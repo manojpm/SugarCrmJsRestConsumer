@@ -1,5 +1,5 @@
-define(['underscore', 'SugarCrmJsRestConsumer'],
-    function(_, SugarCrmJsRestConsumer)
+define(['underscore', 'SugarCrmJsRestConsumer', 'axios', 'qs'],
+    function(_, SugarCrmJsRestConsumer, axios, qs)
     {
         var crm_url = 'http://gsi.crm.mekit.it'
             , crm_rest_version = 'v4_1'
@@ -15,9 +15,29 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
         describe("SugarCrmJsRestConsumer", function()
         {
 
-            it("should be true", function()
+
+            it("should authenticate", function(done)
             {
-                expect(true).toBeTruthy();
+
+                var authArgs = {
+                    user_auth: {
+                        "user_name": username,
+                        "password": password,
+                        "encryption": 'PLAIN'
+                    },
+                    application: "SugarCRM JS Rest Consumer"
+                };
+
+
+                sugar.post('login', authArgs)
+                    .then(function(resp){
+                        console.log(JSON.stringify(resp));
+                        done();
+                    })
+                    .catch(function(err){
+                        done.fail(err);
+                    })
+                ;
             });
 
 

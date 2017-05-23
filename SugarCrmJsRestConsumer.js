@@ -6,7 +6,8 @@
  */
 (function()
 {
-    var  _ = require('underscore')
+    var  _ = require("underscore")
+        , qs = require("qs")
         , Promise = require("bluebird")
         , axios = require("axios")
         ;
@@ -91,7 +92,6 @@
         };
 
         /**
-         *
          * @param {string} [sid]
          * @return {Promise}
          */
@@ -115,8 +115,8 @@
 
                     options = {
                         method: "POST",
-                        uri: api_url,
-                        form: {
+                        url: api_url,
+                        data: {
                             method: "login",
                             input_type: "JSON",
                             response_type: "JSON",
@@ -127,6 +127,17 @@
                         }
                     };
 
+                    axios(options)
+                        .then(function(body)
+                        {
+                            console.log(body);
+                        })
+                        .catch(function(error)
+                        {
+                            console.error("ERR: " + error);
+                        });
+
+                    /*
                     rp.post(options)
                         .then(function(body)
                         {
@@ -190,8 +201,69 @@
                         {
                             return reject(new Error("Request failed with status code: " + error.statusCode));
                         });
-
+                */
                 }
+            });
+        };
+
+
+        /**
+         * @param {string}  method
+         * @param {{}}      data
+         * @param {{}}      [config]
+         *
+         * @return {Promise}
+         */
+        this.post = function(method, data, config)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                var AX = axios.create({
+                    method: "post",
+                    responseType: 'json',
+                    /*maxContentLength: 2000,*/
+                    timeout: 5000,
+                    headers: {
+                        'User-Agent': 'sugarcrm-js-rest-consumer'
+                    }
+                });
+
+                var post_data = {
+                    method: method,
+                    input_type: "JSON",
+                    response_type: "JSON",
+                    rest_data: JSON.stringify(data)
+                };
+
+                AX.post(api_url, qs.stringify(post_data))
+                    .then(function(response)
+                    {
+                        if(response.status == 200)
+                        {
+                            /*
+                             * This is how sugarCRM sends errors!!! Do something about this!
+                             * Risk of false positives!
+                             */
+                            if(!_.isUndefined(response.data["number"])
+                                && !_.isUndefined(response.data["name"])
+                                && !_.isUndefined(response.data["description"]))
+                            {
+                                if(response.data["number"]) {
+                                    throw new Error(response.data["number"]
+                                        + " - " + response.data["name"]
+                                        + " - " + response.data["description"]
+                                    );
+                                }
+                            }
+                            fulfill(response.data);
+                        } else {
+                            throw new Error("The request failed with status code " + response.status);
+                        }
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    });
             });
         };
 
@@ -210,7 +282,6 @@
                 session_id: session_id
             }
         };
-
 
     }
 

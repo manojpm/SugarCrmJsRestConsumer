@@ -17,7 +17,8 @@ requirejs.config({
         /* MODULES */
         underscore: 'node_modules/underscore/underscore-min',
         bluebird: 'node_modules/bluebird/js/browser/bluebird.min',
-        axios: 'node_modules/axios/dist/axios.min'
+        axios: 'node_modules/axios/dist/axios.min',
+        qs: 'node_modules/qs/dist/qs'
     },
     shim: {
         SugarCrmJsRestConsumer: {
