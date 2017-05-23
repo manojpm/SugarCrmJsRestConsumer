@@ -6,7 +6,7 @@
  */
 (function()
 {
-    var  _ = require("underscore")
+    var _ = require("underscore")
         , qs = require("qs")
         , Promise = require("bluebird")
         , axios = require("axios")
@@ -63,8 +63,7 @@
         {
             return new Promise(function(fulfill, reject)
             {
-                if(!_.contains(['default', 'mobile', 'all'], filter))
-                {
+                if (!_.contains(['default', 'mobile', 'all'], filter)) {
                     return reject(new Error("Unknown filter: " + filter));
                 }
 
@@ -116,76 +115,51 @@
             return new Promise(function(fulfill, reject)
             {
                 session_id = "";
+                var authMethod;
+                var authArgs;
 
-                if (_.isEmpty(sid))
-                {
-                    var authArgs = {
+                if (_.isEmpty(sid)) {
+                    authMethod = 'login';
+                    authArgs = {
                         user_auth: {
-                            "user_name": username,
-                            "password": password,
-                            "encryption": 'PLAIN'
-                        },
-                        application: "SugarCRM JS Rest Consumer"
-                    };
-
-                    self.post('login', authArgs)
-                        .then(function(response) {
-                            if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"])) {
-                                session_id = response["id"];
-                            }
-                            if (_.isEmpty(session_id)) {
-                                throw new Error("No session id in response!");
-                            }
-                            fulfill(session_id);
-                        })
-                        .catch(function(error) {
-                            return reject(error);
-                        })
-                    ;
-
-
-
-                    /*
-                } else {
-
-                    options = {
-                        method: "POST",
-                        uri: api_url,
-                        form: {
-                            method: "seamless_login",
-                            input_type: "JSON",
-                            response_type: "JSON",
-                            rest_data: JSON.stringify({session: sid})
-                        },
-                        headers: {
-                            'User-Agent': 'sugarcrm-js-rest-consumer'
+                            user_name: username,
+                            password: password,
+                            encryption: 'PLAIN',/*@todo: need a library for md5 hashing here*/
+                            version: "1"
                         }
                     };
-
-                    rp.post(options)
-                        .then(function(body)
-                        {
-                            if (!_.isUndefined(body)) {
-                                try {
-                                    var response = parseInt(JSON.parse(body));
-                                    if(response === 1)
-                                    {
-                                        session_id = sid;
-                                        fulfill();
-                                    } else {
-                                        return reject(new Error("Invalid Session Id! Please log in again!"));
-                                    }
-                                } catch (e) {
-                                    return reject(new Error("Unable to parse server response!"));
-                                }
-                            }
-                        })
-                        .catch(function(error)
-                        {
-                            return reject(new Error("Request failed with status code: " + error.statusCode));
-                        });
-                */
+                } else {
+                    authMethod = 'seamless_login';
+                    authArgs = {session: sid};
                 }
+
+                _.extend(authArgs, {application: "SugarCRM JS Rest Consumer"});
+
+                self.post(authMethod, authArgs)
+                    .then(function(response)
+                    {
+                        if (_.isEmpty(sid)) {
+                            if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"]))
+                            {
+                                session_id = response["id"];
+                            }
+                        } else {
+                            if(response == 1)
+                            {
+                                session_id = sid;
+                            }
+                        }
+
+                        if (_.isEmpty(session_id)) {
+                            throw new Error("No session id - authentication failed!");
+                        }
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
             });
         };
 
@@ -201,7 +175,11 @@
         {
             return new Promise(function(fulfill, reject)
             {
-
+                var axiosAdditionalConfig = {};
+                if(_.isObject(config))
+                {
+                    axiosAdditionalConfig = _.extend(axiosAdditionalConfig, config);
+                }
 
                 var post_data = {
                     method: method,
@@ -210,20 +188,19 @@
                     rest_data: JSON.stringify(data)
                 };
 
-                AXIOS.post(api_url, qs.stringify(post_data))
+                AXIOS.post(api_url, qs.stringify(post_data), axiosAdditionalConfig)
                     .then(function(response)
                     {
-                        if(response.status == 200)
-                        {
+                        if (response.status == 200) {
                             /*
-                             * This is how sugarCRM sends errors!!! Do something about this!
+                             * This is how sugarCRM sends errors!!!
+                             * Do something about this!
                              * Risk of false positives!
                              */
-                            if(!_.isUndefined(response.data["number"])
+                            if (!_.isUndefined(response.data["number"])
                                 && !_.isUndefined(response.data["name"])
-                                && !_.isUndefined(response.data["description"]))
-                            {
-                                if(response.data["number"]) {
+                                && !_.isUndefined(response.data["description"])) {
+                                if (response.data["number"]) {
                                     throw new Error(response.data["number"]
                                         + " - " + response.data["name"]
                                         + " - " + response.data["description"]
@@ -240,6 +217,28 @@
                         return reject(error);
                     });
             });
+        };
+
+        this.nameValueListCompile = function()
+        {
+
+        };
+
+
+        /**
+         *
+         * @param {{}} list
+         * @return {{}}
+         */
+        this.nameValueListDecompile = function(list)
+        {
+            var answer = {};
+            _.mapObject(list, function(valueObject, key)
+            {
+                answer[key] = valueObject["value"];
+            });
+
+            return answer;
         };
 
         /**
@@ -277,7 +276,8 @@
 
     // AMD registration - copied from underscore
     if (typeof define === 'function' && define.amd) {
-        define('SugarCrmJsRestConsumer', [], function() {
+        define('SugarCrmJsRestConsumer', [], function()
+        {
             return SugarCrmJsRestConsumer;
         });
     }

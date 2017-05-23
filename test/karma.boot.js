@@ -22,11 +22,11 @@ requirejs.config({
     },
     shim: {
         SugarCrmJsRestConsumer: {
-            deps: ["underscore", "bluebird", "axios"]
+            deps: ["underscore", "bluebird", "axios", "qs"]
         }
     },
     deps: [
-        "underscore"
+        /*"underscore"*/
     ]
 });
 
