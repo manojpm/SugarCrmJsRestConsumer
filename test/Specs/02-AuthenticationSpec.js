@@ -26,6 +26,15 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
                             .then(function(response)
                             {
                                 expect(response).toBeFalsy();
+
+                                // Check session id
+                                var cfg = sugar.getConfig();
+                                expect(cfg["session_id"]).toBeNull();
+
+                                //Check authenticated user
+                                var user = sugar.getAuthenticatedUser();
+                                expect(user).toBeNull();
+
                                 done();
                             })
                             .catch(function(err)

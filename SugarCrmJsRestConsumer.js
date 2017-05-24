@@ -302,7 +302,7 @@
         };
 
         /**
-         * @return {{}}
+         * @returns {{}}
          */
         this.getAuthenticatedUser = function()
         {
