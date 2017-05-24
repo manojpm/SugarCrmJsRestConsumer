@@ -1,11 +1,18 @@
 /* Background tests bootstrap*/
 
 //define test spec files to be loaded
+var specFilter = new RegExp('/03-ApplicationSpec.js$');
 var specs = [];
 for (var file in window.__karma__.files) {
-    if (window.__karma__.files.hasOwnProperty(file)) {
-        if (/Spec\.js$/.test(file)) {
-            specs.push(file);
+    if (window.__karma__.files.hasOwnProperty(file))
+    {
+        if (/^\/base\/test\/Specs\/.*Spec\.js$/.test(file))
+        {
+            if (specFilter.test(file))
+            {
+                specs.push(file);
+            }
+
         }
     }
 }

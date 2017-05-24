@@ -30,6 +30,11 @@
             throw new Error("Parameter 'version' must be provided!");
         }
 
+        /**
+         * Establish self object, `window` in the browser, or `exports` on the server.
+         */
+        var self = this;
+
         var crm_url = url;
         var api_version = version;
         var api_url = crm_url + '/service/' + api_version + '/rest.php';
@@ -48,64 +53,71 @@
             headers: xhr_headers
         });
 
+
         /**
-         *
-         * @param {string} filter
+         * @param {string} [filter]
+         * @return {Promise}
          */
-        this.getModules = function(filter)
+        this.getAvailableModules = function(filter)
         {
             return new Promise(function(fulfill, reject)
             {
+                filter = filter || 'all';
                 if (!_.contains(['default', 'mobile', 'all'], filter)) {
                     return reject(new Error("Unknown filter: " + filter));
                 }
 
-                var methodArgs = {
-                    session: session_id,
-                    filter: filter
-                };
+                var method = 'get_available_modules';
+                var methodArgs = {session: session_id, filter: filter};
 
-                var options = {
-                    method: "POST",
-                    uri: api_url,
-                    form: {
-                        method: "get_available_modules",
-                        input_type: "JSON",
-                        response_type: "JSON",
-                        rest_data: JSON.stringify(methodArgs)
-                    },
-                    headers: {
-                        'User-Agent': 'sugarcrm-js-rest-consumer'
-                    }
-                };
-
-                rp.post(options)
-                    .then(function(body)
+                self.post(method, methodArgs)
+                    .then(function(response)
                     {
-                        if (!_.isUndefined(body)) {
-                            try {
-                                var response = JSON.parse(body);
-                                fulfill(response);
-                            } catch (e) {
-                                return reject(new Error("Unable to parse server response!"));
-                            }
+                        if(_.isUndefined(response["modules"]) || !_.isArray(response["modules"]))
+                        {
+                            return reject(new Error("Unable to list modules"));
                         }
+
+                        var modules = {};
+                        _.each(response["modules"], function(module)
+                        {
+                            if(!_.isUndefined(module["module_key"]))
+                            {
+                                var key = module["module_key"];
+
+                                //fix acls
+                                if(!_.isUndefined(module["acls"]))
+                                {
+                                    var action, access;
+                                    var acls = _.clone(module["acls"]);
+                                    module["acls"] = {};
+                                    _.each(acls, function(acl)
+                                    {
+                                        action = acl["action"];
+                                        access = acl["access"];
+                                        module["acls"][action] = access;
+                                    });
+                                }
+
+                                modules[key] = module;
+                            }
+                        });
+
+                        fulfill(modules);
                     })
                     .catch(function(error)
                     {
-                        return reject(new Error("Request failed with status code: " + error.statusCode));
-                    });
+                        return reject(error);
+                    })
+                ;
             });
         };
-
 
         /**
          * @return {Promise}
          */
         this.getServerInfo = function()
         {
-            var self = this;
-
             return new Promise(function(fulfill, reject)
             {
                 self.post('get_server_info', {})
@@ -128,18 +140,16 @@
          */
         this.login = function(username, password)
         {
-            var self = this;
-
             return new Promise(function(fulfill, reject)
             {
                 if(_.isNull(username) || _.isEmpty(username))
                 {
-                    throw new Error("Parameter 'username' must be provided!");
+                    return reject(new Error("Parameter 'username' must be provided!"));
                 }
 
                 if(_.isNull(password) || _.isEmpty(password))
                 {
-                    throw new Error("Parameter 'password' must be provided!");
+                    return reject(new Error("Parameter 'password' must be provided!"));
                 }
 
                 session_id = null;
@@ -186,8 +196,6 @@
          */
         this.logout = function()
         {
-            var self = this;
-
             return new Promise(function(fulfill, reject)
             {
 
@@ -214,8 +222,6 @@
          */
         this.getUserId = function()
         {
-            var self = this;
-
             return new Promise(function(fulfill, reject)
             {
                 self.post('get_user_id', {session: session_id})
@@ -237,8 +243,6 @@
          */
         this.isAuthenticated = function()
         {
-            var self = this;
-
             return new Promise(function(fulfill, reject)
             {
 
@@ -372,17 +376,12 @@
 
     //----------------------------------------------------------------------------------------------------------------//
     /**
-     * Establish the root object, `window` in the browser, or `exports` on the server.
-     */
-    var root = this;
-
-    /**
      * Export ConfigurationManager for **NodeJs** or add it as global if in browser
      */
     if (typeof module !== 'undefined') {
         module.exports = SugarCrmJsRestConsumer;
     } else {
-        root.SugarCrmJsRestConsumer = SugarCrmJsRestConsumer;
+        self.SugarCrmJsRestConsumer = SugarCrmJsRestConsumer;
     }
 
     // AMD registration - copied from underscore
