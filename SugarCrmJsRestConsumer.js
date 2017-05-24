@@ -53,6 +53,38 @@
             headers: xhr_headers
         });
 
+        /**
+         * @param {string} module_name
+         * @param {string} [fields]
+         * @return {Promise}
+         */
+        this.getModuleFields = function(module_name, fields)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if(_.isNull(module_name) || _.isEmpty(module_name))
+                {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+
+                fields = _.isArray(fields) ? fields : null;
+
+                var method = 'get_module_fields';
+                var methodArgs = {session: session_id, module_name: module_name, fields: fields};
+
+                self.post(method, methodArgs)
+                    .then(function(fields)
+                    {
+                        fulfill(fields);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
 
         /**
          * @param {string} [filter]
@@ -311,6 +343,8 @@
                                     throw new Error(responseData["number"]
                                         + " - " + responseData["name"]
                                         + " - " + responseData["description"]
+                                        + " - method: " + method
+                                        + " - data: " + JSON.stringify(data)
                                     );
                                 }
                             }
