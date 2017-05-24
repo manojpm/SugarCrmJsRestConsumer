@@ -2,7 +2,7 @@
 
 //define test spec files to be loaded
 var additionalSpecFilter = new RegExp('');
-additionalSpecFilter = new RegExp('/03-ApplicationSpec.js$');
+//additionalSpecFilter = new RegExp('/04-EntrySpec.js$');
 var specs = [];
 for (var file in window.__karma__.files) {
     if (window.__karma__.files.hasOwnProperty(file))

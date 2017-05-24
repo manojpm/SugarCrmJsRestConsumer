@@ -20,13 +20,11 @@
      */
     function SugarCrmJsRestConsumer(url, version)
     {
-        if(_.isNull(url) || _.isEmpty(url))
-        {
+        if (_.isNull(url) || _.isEmpty(url)) {
             throw new Error("Parameter 'url' must be provided!");
         }
 
-        if(_.isNull(version) || _.isEmpty(version))
-        {
+        if (_.isNull(version) || _.isEmpty(version)) {
             throw new Error("Parameter 'version' must be provided!");
         }
 
@@ -54,6 +52,76 @@
         });
 
         /**
+         * Get a list of entries from module
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_entry_list/
+         *
+         * @param {string} module_name
+         * @param {{}} [parameters]
+         *
+         * @return {Promise}
+         */
+        this.getEntryList = function(module_name, parameters)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if (_.isNull(module_name) || _.isEmpty(module_name)) {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+
+                var method = 'get_entry_list';
+                var methodArgs = {
+                    session: session_id,
+                    module_name: module_name,
+                    query: '',
+                    order_by: '',
+                    offset: 0,
+                    select_fields: [],
+                    link_name_to_fields_array: [],
+                    max_results: null,
+                    deleted: false,
+                    favorites: false
+                };
+
+                if(_.isObject(parameters) && !_.isEmpty(parameters))
+                {
+                    var allowedKeys = _.keys(methodArgs);
+                    _.each(allowedKeys, function(k)
+                    {
+                        if(_.has(parameters, k))
+                        {
+                            methodArgs[k] = parameters[k];
+                        }
+                    });
+                }
+
+                self.post(method, methodArgs)
+                    .then(function(response)
+                    {
+                        // Fix 'name_value_list' in entries
+                        if(_.isArray(response["entry_list"])) {
+                            var entries = response["entry_list"];
+                            _.each(entries, function(entry)
+                            {
+                                if(_.isObject(entry["name_value_list"]))
+                                {
+                                    var entryData = self.nameValueListDecompile(entry["name_value_list"]);
+                                    entry = _.extend(entry, entryData);
+                                    delete entry["name_value_list"];
+                                }
+                            });
+                        }
+
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
          * @param {string} module_name
          * @param {string} [fields]
          * @return {Promise}
@@ -62,8 +130,7 @@
         {
             return new Promise(function(fulfill, reject)
             {
-                if(_.isNull(module_name) || _.isEmpty(module_name))
-                {
+                if (_.isNull(module_name) || _.isEmpty(module_name)) {
                     return reject(new Error("Parameter 'module_name' must be provided!"));
                 }
 
@@ -85,7 +152,6 @@
             });
         };
 
-
         /**
          * @param {string} [filter]
          * @return {Promise}
@@ -105,21 +171,18 @@
                 self.post(method, methodArgs)
                     .then(function(response)
                     {
-                        if(_.isUndefined(response["modules"]) || !_.isArray(response["modules"]))
-                        {
+                        if (_.isUndefined(response["modules"]) || !_.isArray(response["modules"])) {
                             return reject(new Error("Unable to list modules"));
                         }
 
                         var modules = {};
                         _.each(response["modules"], function(module)
                         {
-                            if(!_.isUndefined(module["module_key"]))
-                            {
+                            if (!_.isUndefined(module["module_key"])) {
                                 var key = module["module_key"];
 
                                 //fix acls
-                                if(!_.isUndefined(module["acls"]))
-                                {
+                                if (!_.isUndefined(module["acls"])) {
                                     var action, access;
                                     var acls = _.clone(module["acls"]);
                                     module["acls"] = {};
@@ -174,13 +237,11 @@
         {
             return new Promise(function(fulfill, reject)
             {
-                if(_.isNull(username) || _.isEmpty(username))
-                {
+                if (_.isNull(username) || _.isEmpty(username)) {
                     return reject(new Error("Parameter 'username' must be provided!"));
                 }
 
-                if(_.isNull(password) || _.isEmpty(password))
-                {
+                if (_.isNull(password) || _.isEmpty(password)) {
                     return reject(new Error("Parameter 'password' must be provided!"));
                 }
 
@@ -200,8 +261,7 @@
                 self.post(authMethod, authArgs)
                     .then(function(response)
                     {
-                        if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"]))
-                        {
+                        if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"])) {
                             session_id = response["id"];
                         }
 
@@ -295,7 +355,6 @@
             });
         };
 
-
         /**
          * @param {string}  method
          * @param {{}}      data
@@ -308,8 +367,7 @@
             return new Promise(function(fulfill, reject)
             {
                 var axiosAdditionalConfig = {};
-                if(_.isObject(config))
-                {
+                if (_.isObject(config)) {
                     axiosAdditionalConfig = _.extend(axiosAdditionalConfig, config);
                 }
 
@@ -326,8 +384,7 @@
                         if (response.status == 200) {
 
                             var responseData = {};
-                            if(!_.isUndefined(response.data) && !_.isNull(response.data))
-                            {
+                            if (!_.isUndefined(response.data) && !_.isNull(response.data)) {
                                 responseData = response.data;
                             }
 
@@ -361,12 +418,10 @@
             });
         };
 
-
         this.nameValueListCompile = function()
         {
 
         };
-
 
         /**
          *
