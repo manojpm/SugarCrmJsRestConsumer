@@ -21,12 +21,13 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'node_modules/babel-polyfill/dist/polyfill.min.js',
             'test/karma.boot.js',
+            'node_modules/babel-polyfill/dist/polyfill.min.js',
             {pattern: 'node_modules/underscore/underscore-min.js', included: false, watched: false},
             {pattern: 'node_modules/bluebird/js/browser/bluebird.min.js', included: false, watched: false},
             {pattern: 'node_modules/axios/dist/axios.min.js', included: false, watched: false},
             {pattern: 'node_modules/qs/dist/qs.js', included: false, watched: false},
+            {pattern: 'node_modules/blueimp-md5/js/md5.min.js', included: false, watched: false},
 
             {pattern: 'test/Specs/**/*.js', included: false, watched: true},
 
@@ -50,7 +51,7 @@ module.exports = function(config) {
         reporters: ['progress', 'dots'],
 
         // web server port
-        port: 9876,
+        port: 9877,
 
 
         // enable / disable colors in the output (reporters and logs)

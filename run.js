@@ -31,7 +31,7 @@ if (fs.existsSync(sidfile)) {
 var sugar = new SugarCrmJsRestConsumer();
 sugar.init(crm_url, crm_rest_version, username, password);
 
-sugar.authenticate(session_id)
+sugar.login(session_id)
     .then(function()
     {
         console.log("Auth ok.");

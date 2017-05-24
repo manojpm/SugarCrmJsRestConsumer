@@ -1,17 +1,18 @@
 define(['underscore', 'SugarCrmJsRestConsumer'],
     function(_, SugarCrmJsRestConsumer)
     {
-        var crm_url = 'http://gsi.crm.mekit.it'
+        var sugar
+            , crm_url = 'http://gsi.crm.mekit.it'
             , crm_rest_version = 'v4_1'
-            , username = 'user1'
-            , password = 'user1'
             , session_id = ''
             ;
 
-        var sugar = new SugarCrmJsRestConsumer();
-        sugar.init(crm_url, crm_rest_version, username, password);
+        beforeAll(function()
+        {
+            sugar = new SugarCrmJsRestConsumer(crm_url, crm_rest_version);
+        });
 
-        describe("SugarCrmJsRestConsumer", function()
+        describe("Initialization", function()
         {
 
             it("should return correct init variable: crm_url", function()
@@ -26,18 +27,6 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
                 expect(cfg["api_version"]).toBe(crm_rest_version);
             });
 
-            it("should return correct init variable: username", function()
-            {
-                var cfg = sugar.getConfig();
-                expect(cfg["username"]).toBe(username);
-            });
-
-            it("should return correct init variable: password", function()
-            {
-                var cfg = sugar.getConfig();
-                expect(cfg["password"]).toBe(password);
-            });
-
             it("should return correct init variable: api_url", function()
             {
                 var cfg = sugar.getConfig();
@@ -48,7 +37,7 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
             it("should return correct init variable: session_id", function()
             {
                 var cfg = sugar.getConfig();
-                expect(cfg["session_id"]).toBe("");
+                expect(cfg["session_id"]).toBeNull();
             });
 
 

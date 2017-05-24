@@ -10,50 +10,43 @@
         , qs = require("qs")
         , Promise = require("bluebird")
         , axios = require("axios")
+        , md5 = require("md5")
         ;
 
     /**
      * @constructor
+     * @param {string} url
+     * @param {string} version
      */
-    function SugarCrmJsRestConsumer()
+    function SugarCrmJsRestConsumer(url, version)
     {
-        var crm_url = "";
-        var api_version = "";
-        var api_url = "";
-        var username = "";
-        var password = "";
-        var session_id = "";
+        if(_.isNull(url) || _.isEmpty(url))
+        {
+            throw new Error("Parameter 'url' must be provided!");
+        }
 
-        var AXIOS;
+        if(_.isNull(version) || _.isEmpty(version))
+        {
+            throw new Error("Parameter 'version' must be provided!");
+        }
+
+        var crm_url = url;
+        var api_version = version;
+        var api_url = crm_url + '/service/' + api_version + '/rest.php';
+        var session_id = null;
+        var authenticated_user = null;
 
         var xhr_timeout = 5000;
         var xhr_headers = {
             'User-Agent': 'sugarcrm-js-rest-consumer'
         };
 
-
-        /**
-         *
-         * @param {string} url
-         * @param {string} version
-         * @param {string} user
-         * @param {string} pwd
-         */
-        this.init = function(url, version, user, pwd)
-        {
-            crm_url = url;
-            api_version = version;
-            api_url = crm_url + '/service/' + api_version + '/rest.php';
-            username = user;
-            password = pwd;
-
-            AXIOS = axios.create({
-                method: "post",
-                responseType: 'json',
-                timeout: xhr_timeout,
-                headers: xhr_headers
-            });
-        };
+        var AXIOS = axios.create({
+            method: "post",
+            responseType: 'json',
+            timeout: xhr_timeout,
+            headers: xhr_headers
+        });
 
         /**
          *
@@ -106,54 +99,112 @@
         };
 
         /**
-         * @param {string} [sid]
+         * @param {string} username
+         * @param {string} password
          * @return {Promise}
          */
-        this.authenticate = function(sid)
+        this.login = function(username, password)
         {
             var self = this;
+
             return new Promise(function(fulfill, reject)
             {
-                session_id = "";
-                var authMethod;
-                var authArgs;
-
-                if (_.isEmpty(sid)) {
-                    authMethod = 'login';
-                    authArgs = {
-                        user_auth: {
-                            user_name: username,
-                            password: password,
-                            encryption: 'PLAIN',/*@todo: need a library for md5 hashing here*/
-                            version: "1"
-                        }
-                    };
-                } else {
-                    authMethod = 'seamless_login';
-                    authArgs = {session: sid};
+                if(_.isNull(username) || _.isEmpty(username))
+                {
+                    throw new Error("Parameter 'username' must be provided!");
                 }
 
-                _.extend(authArgs, {application: "SugarCRM JS Rest Consumer"});
+                if(_.isNull(password) || _.isEmpty(password))
+                {
+                    throw new Error("Parameter 'password' must be provided!");
+                }
+
+                session_id = null;
+                authenticated_user = null;
+
+                var authMethod = 'login';
+                var authArgs = {
+                    user_auth: {
+                        user_name: username,
+                        password: md5(password),
+                        version: "1"
+                    },
+                    application: "SugarCRM JS Rest Consumer"
+                };
 
                 self.post(authMethod, authArgs)
                     .then(function(response)
                     {
-                        if (_.isEmpty(sid)) {
-                            if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"]))
-                            {
-                                session_id = response["id"];
-                            }
-                        } else {
-                            if(response == 1)
-                            {
-                                session_id = sid;
-                            }
+                        if (!_.isUndefined(response["id"]) && !_.isEmpty(response["id"]))
+                        {
+                            session_id = response["id"];
                         }
 
-                        if (_.isEmpty(session_id)) {
+                        if (_.isNull(session_id)) {
                             throw new Error("No session id - authentication failed!");
                         }
+
+                        //register current user
+                        authenticated_user = self.nameValueListDecompile(response["name_value_list"]);
+
                         fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
+         * Invalidate session on SugarCRM and clear variables
+         * @return {Promise}
+         */
+        this.logout = function()
+        {
+            var self = this;
+
+            return new Promise(function(fulfill, reject)
+            {
+
+                var authMethod = 'logout';
+                var authArgs = {session: session_id};
+
+                self.post(authMethod, authArgs)
+                    .then(function()
+                    {
+                        session_id = null;
+                        authenticated_user = null;
+                        fulfill();
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
+         * Checks if SugarCRM accepts current session id
+         * @return {Promise}
+         */
+        this.isAuthenticated = function()
+        {
+            var self = this;
+
+            return new Promise(function(fulfill, reject)
+            {
+
+                var authMethod = 'seamless_login';
+                var authArgs = {session: session_id};
+
+                self.post(authMethod, authArgs)
+                    .then(function(response)
+                    {
+                        var answer = (parseInt(response) == 1);
+                        fulfill(answer);
                     })
                     .catch(function(error)
                     {
@@ -192,22 +243,30 @@
                     .then(function(response)
                     {
                         if (response.status == 200) {
+
+                            var responseData = {};
+                            if(!_.isUndefined(response.data) && !_.isNull(response.data))
+                            {
+                                responseData = response.data;
+                            }
+
                             /*
                              * This is how sugarCRM sends errors!!!
                              * Do something about this!
                              * Risk of false positives!
                              */
-                            if (!_.isUndefined(response.data["number"])
-                                && !_.isUndefined(response.data["name"])
-                                && !_.isUndefined(response.data["description"])) {
-                                if (response.data["number"]) {
-                                    throw new Error(response.data["number"]
-                                        + " - " + response.data["name"]
-                                        + " - " + response.data["description"]
+                            if (!_.isUndefined(responseData["number"])
+                                && !_.isUndefined(responseData["name"])
+                                && !_.isUndefined(responseData["description"])) {
+                                if (responseData["number"]) {
+                                    throw new Error(responseData["number"]
+                                        + " - " + responseData["name"]
+                                        + " - " + responseData["description"]
                                     );
                                 }
                             }
-                            fulfill(response.data);
+
+                            fulfill(responseData);
                         } else {
                             throw new Error("The request failed with status code " + response.status);
                         }
@@ -218,6 +277,7 @@
                     });
             });
         };
+
 
         this.nameValueListCompile = function()
         {
@@ -242,6 +302,14 @@
         };
 
         /**
+         * @return {{}}
+         */
+        this.getAuthenticatedUser = function()
+        {
+            return authenticated_user;
+        };
+
+        /**
          *
          * @returns {{api_url: string, crm_url: string, api_version: string, username: string, password: string}}
          */
@@ -251,8 +319,6 @@
                 crm_url: crm_url,
                 api_version: api_version,
                 api_url: api_url,
-                username: username,
-                password: password,
                 session_id: session_id
             }
         };

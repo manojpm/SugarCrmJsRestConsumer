@@ -1,45 +1,31 @@
 define(['underscore', 'SugarCrmJsRestConsumer'],
     function(_, SugarCrmJsRestConsumer)
     {
-        var crm_url = 'http://gsi.crm.mekit.it'
+        var sugar
+            , crm_url = 'http://gsi.crm.mekit.it'
             , crm_rest_version = 'v4_1'
             , username = 'user1'
             , password = 'user1'
-            , sugar
             ;
 
         beforeAll(function()
         {
-            sugar = new SugarCrmJsRestConsumer();
-            sugar.init(crm_url, crm_rest_version, username, password);
+            sugar = new SugarCrmJsRestConsumer(crm_url, crm_rest_version);
         });
 
-        describe("SugarCrmJsRestConsumer authentication", function()
+        describe("Authentication", function()
         {
 
-            it("should be cool", function(done)
-            {
-                //console.log(response);
-                //var DL = sugar.nameValueListDecompile(response["name_value_list"]);
-                //console.log(DL);
-                done();
-            });
 
-
-            it("should return valid response after login with correct session id", function(done)
+            it("should not be authenticated after logout", function(done)
             {
-                sugar.authenticate()
+                sugar.logout()
                     .then(function()
                     {
-                        var cfg = sugar.getConfig();
-                        var sessionId = cfg["session_id"];
-
-                        sugar.authenticate(sessionId)
-                            .then(function()
+                        sugar.isAuthenticated()
+                            .then(function(response)
                             {
-                                // Check session id
-                                cfg = sugar.getConfig();
-                                expect(cfg["session_id"]).toBe(sessionId);
+                                expect(response).toBeFalsy();
                                 done();
                             })
                             .catch(function(err)
@@ -51,13 +37,62 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
                     .catch(function(err)
                     {
                         done.fail(err);
-                    });
+                    })
+                ;
             });
 
+            it("should remain authenticated after correct login", function(done)
+            {
+                sugar.login(username, password)
+                    .then(function()
+                    {
+                        sugar.isAuthenticated()
+                            .then(function(response)
+                            {
+                                expect(response).toBeTruthy();
+                                done();
+                            })
+                            .catch(function(err)
+                            {
+                                done.fail(err);
+                            })
+                        ;
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
+
+            it("should register authenticated user after correct login", function(done)
+            {
+                sugar.login(username, password)
+                    .then(function()
+                    {
+                        // Check session id
+                        var user = sugar.getAuthenticatedUser();
+                        expect(_.isObject(user)).toBeTruthy();
+                        expect(_.isString(user["user_id"])).toBeTruthy();
+                        expect(_.isString(user["user_name"])).toBeTruthy();
+                        expect(_.isString(user["user_language"])).toBeTruthy();
+                        expect(_.isBoolean(user["user_is_admin"])).toBeTruthy();
+                        expect(_.isString(user["user_default_dateformat"])).toBeTruthy();
+                        expect(_.isString(user["user_default_timeformat"])).toBeTruthy();
+                        expect(_.isString(user["user_number_seperator"])).toBeTruthy();
+                        expect(_.isString(user["user_decimal_seperator"])).toBeTruthy();
+                        done();
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
 
             it("should return valid response after correct login", function(done)
             {
-                sugar.authenticate()
+                sugar.login(username, password)
                     .then(function(response)
                     {
                         // Check response
@@ -76,6 +111,20 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
                     .catch(function(err)
                     {
                         done.fail(err);
+                    })
+                ;
+            });
+
+            it("should throw error on incorrect login", function(done)
+            {
+                sugar.login('incorrect-user', 'incorrect-password')
+                    .then(function(response)
+                    {
+                        done.fail(new Error("Bad login success! Bad stuff!" + JSON.stringify(response)));
+                    })
+                    .catch(function(err)
+                    {
+                        done();
                     })
                 ;
             });
