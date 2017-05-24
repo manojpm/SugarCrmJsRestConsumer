@@ -15,8 +15,6 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
 
         describe("Authentication", function()
         {
-
-
             it("should not be authenticated after logout", function(done)
             {
                 sugar.logout()
@@ -74,6 +72,33 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
                 ;
             });
 
+            it("should have same authenticated user id as server", function(done)
+            {
+                sugar.login(username, password)
+                    .then(function()
+                    {
+                        // Check session id
+                        var user = sugar.getAuthenticatedUser();
+                        sugar.getUserId()
+                            .then(function(user_id)
+                            {
+                                // Check user id
+                                expect(user["user_id"]).toBe(user_id);
+                                done();
+                            })
+                            .catch(function(err)
+                            {
+                                done.fail(err);
+                            })
+                        ;
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
+
             it("should register authenticated user after correct login", function(done)
             {
                 sugar.login(username, password)
@@ -90,6 +115,7 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
                         expect(_.isString(user["user_default_timeformat"])).toBeTruthy();
                         expect(_.isString(user["user_number_seperator"])).toBeTruthy();
                         expect(_.isString(user["user_decimal_seperator"])).toBeTruthy();
+
                         done();
                     })
                     .catch(function(err)

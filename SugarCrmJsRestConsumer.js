@@ -98,6 +98,29 @@
             });
         };
 
+
+        /**
+         * @return {Promise}
+         */
+        this.getServerInfo = function()
+        {
+            var self = this;
+
+            return new Promise(function(fulfill, reject)
+            {
+                self.post('get_server_info', {})
+                    .then(function(response)
+                    {
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
         /**
          * @param {string} username
          * @param {string} password
@@ -177,6 +200,28 @@
                         session_id = null;
                         authenticated_user = null;
                         fulfill();
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
+         * @return {Promise}
+         */
+        this.getUserId = function()
+        {
+            var self = this;
+
+            return new Promise(function(fulfill, reject)
+            {
+                self.post('get_user_id', {session: session_id})
+                    .then(function(response)
+                    {
+                        fulfill(response);
                     })
                     .catch(function(error)
                     {
