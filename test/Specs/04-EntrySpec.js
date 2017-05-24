@@ -31,6 +31,25 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
         describe("Entry", function()
         {
 
+
+            it("should retrieve filtered records (param: query)", function(done)
+            {
+                sugar.getEntryList(moduleToTest, {query: 'is_admin = 1'})
+                    .then(function(response)
+                    {
+                        var entry = _.first(response["entry_list"]);
+
+                        console.log(entry);
+
+                        done();
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
+
             it("should retrieve records with limited fields (param: select_fields)", function(done)
             {
                 var selectFields = ["id", "user_name", "full_name"];
@@ -86,7 +105,7 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
                         expect(_.isString(entry["id"])).toBeTruthy();
                         expect(_.isString(entry["module_name"])).toBeTruthy();
                         expect(_.isUndefined(entry["name_value_list"])).toBeTruthy();
-                        //console.log(entry);
+                        console.log(entry);
 
                         done();
                     })
