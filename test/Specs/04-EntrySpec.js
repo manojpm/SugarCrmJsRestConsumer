@@ -52,6 +52,24 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
                 ;
             });
 
+            it("should get record count (param: query)", function(done)
+            {
+                sugar.getEntriesCount(moduleToTest)
+                    .then(function(response)
+                    {
+                        expect(_.isObject(response)).toBeTruthy();
+                        expect(_.isString(response["result_count"])).toBeTruthy();
+                        expect(parseInt(response["result_count"])).toBeGreaterThan(0);
+
+                        done();
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
+
 
             it("should retrieve filtered records (param: query)", function(done)
             {

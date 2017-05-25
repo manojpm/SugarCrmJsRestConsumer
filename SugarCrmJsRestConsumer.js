@@ -118,6 +118,47 @@
          * @param {String}      module_name
          * @param {Object}      [parameters]
          * @param {String}      [parameters.query]
+         * @param {Boolean}     [parameters.deleted]
+         *
+         * @return {Promise}
+         */
+        this.getEntriesCount = function(module_name, parameters)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if (_.isNull(module_name) || _.isEmpty(module_name)) {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+
+                var method = 'get_entries_count';
+                var methodParams = {
+                    session: session_id,
+                    module_name: module_name,
+                    query: '',
+                    deleted: false,
+                };
+                methodParams = self.mapObjectProperties(methodParams, parameters);
+
+                self.post(method, methodParams)
+                    .then(function(response)
+                    {
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
+         * Get a list of entries from module (using sql WHERE for filtering)
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_entry_list/
+         *
+         * @param {String}      module_name
+         * @param {Object}      [parameters]
+         * @param {String}      [parameters.query]
          * @param {String}      [parameters.order_by]
          * @param {Integer}     [parameters.offset]
          * @param {Array}       [parameters.select_fields]
