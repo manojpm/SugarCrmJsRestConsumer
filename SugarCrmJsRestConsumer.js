@@ -64,8 +64,99 @@
 
 
         /**
-         * Create|Update a single entry in module by ID
+         * Delete a single entry in module by ID
+         * Proxy method
+         *
+         * @param {String}      module_name
+         * @param {Array}       id_list
+         *
+         * @return {Promise}
+         */
+        this.deleteEntries = function(module_name, id_list)
+        {
+            if(!_.isArray(id_list)){
+                throw new Error("Parameter id_list must be an array of IDs!");
+            }
+
+            var entry_list = [];
+
+            id_list = _.flatten(id_list);
+            _.map(id_list, function(id) {
+                entry_list.push({
+                    id: id,
+                    deleted: true
+                });
+            });
+
+            return self.setEntries(module_name, entry_list);
+        };
+
+        /**
+         * Delete a single entry in module by ID
+         * Proxy method
+         *
+         * @param {String}      module_name
+         * @param {String}      id
+         *
+         * @return {Promise}
+         */
+        this.deleteEntry = function(module_name, id)
+        {
+            return self.setEntry(module_name, id, {deleted: true});
+        };
+
+        /**
+         * Create|Update an array of entries in module by ID
          * if ID is set the record with tht ID will be updated
+         * if ID is not set a new record will be created
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/set_entries/
+         *
+         * WORD OF WARNING: see comments on setEntry()
+         *
+         * @param {String}          module_name
+         * @param {Array}           entry_list
+         *
+         * @return {Promise}
+         */
+        this.setEntries = function(module_name, entry_list)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if (_.isNull(module_name) || _.isEmpty(module_name) || !_.isString(module_name)) {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+
+                var nameValueList = [];//self.nameValueListCompile(parameters);
+                _.each(entry_list, function(entry)
+                {
+                    nameValueList.push(self.nameValueListCompile(entry));
+                });
+
+                var method = 'set_entries';
+                var methodParams = {
+                    session: session_id,
+                    module_name: module_name,
+                    name_value_list: nameValueList
+                };
+
+                //console.log(JSON.stringify(nameValueList));
+
+                self.post(method, methodParams)
+                    .then(function(response)
+                    {
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
+         * Create|Update a single entry in module by ID
+         * if ID is set the record with that ID will be updated
          * if ID is set to FALSE a new record will be created
          * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/set_entry/
          *
@@ -89,15 +180,14 @@
                 }
 
                 var isNewRecord = false;
-                if(_.isBoolean(id) && id === false) {
+                if (_.isBoolean(id) && id === false) {
                     isNewRecord = true;
                 } else if (_.isNull(id) || _.isEmpty(id) || !_.isString(id)) {
                     return reject(new Error("Parameter 'id' must be provided!"));
                 }
 
-                if(!isNewRecord)
-                {
-                    parameters = _.extend({id:id}, parameters);
+                if (!isNewRecord) {
+                    parameters = _.extend({id: id}, parameters);
                 }
                 var nameValueList = self.nameValueListCompile(parameters);
 
@@ -111,14 +201,13 @@
                 self.post(method, methodParams)
                     .then(function(response)
                     {
-
-                        if(!_.isUndefined(response["entry_list"]))
-                        {
+                        if (!_.isUndefined(response["entry_list"])) {
                             // entry list fixer expects a different format
                             var nameValueList = response["entry_list"];
                             response["entry_list"] = [{name_value_list: nameValueList}];
+                            response = self.fixEntryListInResponse(response);
                         }
-                        response = self.fixEntryListInResponse(response);
+
                         fulfill(response);
                     })
                     .catch(function(error)
@@ -568,15 +657,13 @@
          *
          * @param {String}      method
          * @param {Object}      data
-         * @param {{}}          [config]
          *
          * @return {Promise}
          */
-        this.post = function(method, data, config)
+        this.post = function(method, data)
         {
             return new Promise(function(fulfill, reject)
             {
-                var axiosCustomConfig = self.mapObjectProperties(axiosDefaultConfig, config);
                 var post_data = {
                     method: method,
                     input_type: "JSON",
@@ -584,7 +671,7 @@
                     rest_data: JSON.stringify(data)
                 };
 
-                AXIOS.post(api_url, qs.stringify(post_data), axiosCustomConfig)
+                AXIOS.post(api_url, qs.stringify(post_data), axiosDefaultConfig)
                     .then(function(response)
                     {
                         if (response.status == 200) {
@@ -622,6 +709,19 @@
                         return reject(error);
                     });
             });
+        };
+
+        /**
+         * @param {String} key
+         * @param {*} value
+         */
+        this.setAxiosConfig = function(key, value)
+        {
+            if (_.has(axiosDefaultConfig, key)) {
+                axiosDefaultConfig[key] = value;
+            } else {
+                throw new Error("Invalid key: " + key);
+            }
         };
 
         //------------------------------------------------------------------------------------------------------------//
@@ -665,8 +765,7 @@
                 var allowedProps = _.keys(original);
                 var extProps = _.keys(extension);
                 var invalidProps = _.difference(extProps, allowedProps);
-                if(!_.isEmpty(invalidProps))
-                {
+                if (!_.isEmpty(invalidProps)) {
                     throw new Error("Invalid properties detected: " + JSON.stringify(invalidProps));
                 }
                 _.each(allowedProps, function(prop)

@@ -80,7 +80,7 @@ module.exports = function(config) {
         },
 
         //browser timeout in ms
-        browserNoActivityTimeout: 10 * 1000,
+        browserNoActivityTimeout: 60 * 1000,
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
