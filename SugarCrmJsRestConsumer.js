@@ -39,17 +39,28 @@
         var session_id = null;
         var authenticated_user = null;
 
-        var xhr_timeout = 5000;
-        var xhr_headers = {
-            'User-Agent': 'sugarcrm-js-rest-consumer'
-        };
-
-        var AXIOS = axios.create({
+        /**
+         * @see https://github.com/mzabriskie/axios#request-config
+         */
+        var axiosDefaultConfig = {
             method: "post",
             responseType: 'json',
-            timeout: xhr_timeout,
-            headers: xhr_headers
-        });
+            timeout: 5000,
+            headers: {'User-Agent': 'sugarcrm-js-rest-consumer'},
+            transformRequest: [],
+            transformResponse: [],
+            withCredentials: false,
+            auth: {username: '', password: ''},
+            xsrfCookieName: 'XSRF-TOKEN',
+            xsrfHeaderName: 'X-XSRF-TOKEN',
+            onUploadProgress: null,
+            onDownloadProgress: null,
+            maxContentLength: -1,
+            maxRedirects: 0,
+            proxy: {}
+        };
+
+        var AXIOS = axios.create(axiosDefaultConfig);
 
         /**
          * Get a list of entries from module
@@ -69,7 +80,7 @@
                 }
 
                 var method = 'get_entry_list';
-                var methodArgs = {
+                var methodParams = {
                     session: session_id,
                     module_name: module_name,
                     query: '',
@@ -81,29 +92,17 @@
                     deleted: false,
                     favorites: false
                 };
+                methodParams = self.mapObjectProperties(methodParams, parameters);
 
-                if(_.isObject(parameters) && !_.isEmpty(parameters))
-                {
-                    var allowedKeys = _.keys(methodArgs);
-                    _.each(allowedKeys, function(k)
-                    {
-                        if(_.has(parameters, k))
-                        {
-                            methodArgs[k] = parameters[k];
-                        }
-                    });
-                }
-
-                self.post(method, methodArgs)
+                self.post(method, methodParams)
                     .then(function(response)
                     {
                         // Fix 'name_value_list' in entries
-                        if(_.isArray(response["entry_list"])) {
+                        if (_.isArray(response["entry_list"])) {
                             var entries = response["entry_list"];
                             _.each(entries, function(entry)
                             {
-                                if(_.isObject(entry["name_value_list"]))
-                                {
+                                if (_.isObject(entry["name_value_list"])) {
                                     var entryData = self.nameValueListDecompile(entry["name_value_list"]);
                                     entry = _.extend(entry, entryData);
                                     delete entry["name_value_list"];
@@ -366,11 +365,7 @@
         {
             return new Promise(function(fulfill, reject)
             {
-                var axiosAdditionalConfig = {};
-                if (_.isObject(config)) {
-                    axiosAdditionalConfig = _.extend(axiosAdditionalConfig, config);
-                }
-
+                var axiosCustomConfig = self.mapObjectProperties(axiosDefaultConfig, config);
                 var post_data = {
                     method: method,
                     input_type: "JSON",
@@ -378,7 +373,7 @@
                     rest_data: JSON.stringify(data)
                 };
 
-                AXIOS.post(api_url, qs.stringify(post_data), axiosAdditionalConfig)
+                AXIOS.post(api_url, qs.stringify(post_data), axiosCustomConfig)
                     .then(function(response)
                     {
                         if (response.status == 200) {
@@ -418,12 +413,41 @@
             });
         };
 
+        //------------------------------------------------------------------------------------------------------------//
+        /**
+         * @todo: move out to some helper class
+         *
+         * Map(copy) over property values from extension to original
+         * only for properties already defined on original
+         *
+         * @param {{}} original
+         * @param {{}} extension
+         * @return {{}}
+         */
+        this.mapObjectProperties = function(original, extension)
+        {
+            if (_.isObject(original) && !_.isEmpty(original) && _.isObject(extension) && !_.isEmpty(extension)) {
+                var allowedProps = _.keys(original);
+                _.each(allowedProps, function(prop)
+                {
+                    if (_.has(extension, prop)) {
+                        original[prop] = extension[prop];
+                    }
+                });
+            }
+            return original;
+        };
+
+        /**
+         * @todo: move out to some helper class
+         */
         this.nameValueListCompile = function()
         {
 
         };
 
         /**
+         * @todo: move out to some helper class
          *
          * @param {{}} list
          * @return {{}}

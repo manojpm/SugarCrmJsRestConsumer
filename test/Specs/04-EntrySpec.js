@@ -4,8 +4,8 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
         var sugar
             , crm_url = 'http://gsi.crm.mekit.it'
             , crm_rest_version = 'v4_1'
-            , username = 'user1'
-            , password = 'user1'
+            , username = 'admin'
+            , password = 'admin'
             , moduleToTest = 'Users'
             ;
 
@@ -34,12 +34,14 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
 
             it("should retrieve filtered records (param: query)", function(done)
             {
-                sugar.getEntryList(moduleToTest, {query: 'is_admin = 1'})
+                sugar.getEntryList(moduleToTest, {query: 'users.user_name = "admin"'})
                     .then(function(response)
                     {
+                        expect(_.isArray(response["entry_list"])).toBeTruthy();
+                        expect(_.size(response["entry_list"])).toBe(1);
                         var entry = _.first(response["entry_list"]);
-
-                        console.log(entry);
+                        expect(_.isObject(entry)).toBeTruthy();
+                        expect(entry["user_name"]).toBe("admin");
 
                         done();
                     })
@@ -105,7 +107,6 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
                         expect(_.isString(entry["id"])).toBeTruthy();
                         expect(_.isString(entry["module_name"])).toBeTruthy();
                         expect(_.isUndefined(entry["name_value_list"])).toBeTruthy();
-                        console.log(entry);
 
                         done();
                     })
