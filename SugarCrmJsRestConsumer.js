@@ -64,6 +64,54 @@
 
 
 
+        /**
+         * Get a single entry from module by ID
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_entry/
+         *
+         * @param {String}      module_name
+         * @param {String}      id
+         * @param {Object}      parameters
+         * @param {Array}       [parameters.select_fields]
+         * @param {Array}       [parameters.link_name_to_fields_array]
+         * @param {Boolean}     [parameters.track_view]
+         *
+         * @return {Promise}
+         */
+        this.getEntry = function(module_name, id, parameters)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if (_.isNull(module_name) || _.isEmpty(module_name) || !_.isString(module_name)) {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+                if (_.isNull(id) || _.isEmpty(id) || !_.isString(id)) {
+                    return reject(new Error("Parameter 'id' must be provided!"));
+                }
+
+                var method = 'get_entry';
+                var methodParams = {
+                    session: session_id,
+                    module_name: module_name,
+                    id: id,
+                    select_fields: [],
+                    link_name_to_fields_array: [],
+                    track_view: false
+                };
+                methodParams = self.mapObjectProperties(methodParams, parameters);
+
+                self.post(method, methodParams)
+                    .then(function(response)
+                    {
+                        response = self.fixEntryListInResponse(response);
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
 
         /**
          * Get a list of entries from module (using a list of IDs)
@@ -113,7 +161,7 @@
 
         /**
          * Get a list of entries from module (using sql WHERE for filtering)
-         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_entry_list/
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_entries_count/
          *
          * @param {String}      module_name
          * @param {Object}      [parameters]
@@ -207,6 +255,8 @@
         };
 
         /**
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_module_fields/
+         *
          * @param {String} module_name
          * @param {Array} [fields]
          * @return {Promise}
@@ -314,6 +364,8 @@
         };
 
         /**
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/login/
+         *
          * @param {String} username
          * @param {String} password
          * @return {Promise}
@@ -369,6 +421,8 @@
 
         /**
          * Invalidate session on SugarCRM and clear variables
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/logout/
+         *
          * @return {Promise}
          */
         this.logout = function()
@@ -395,6 +449,8 @@
         };
 
         /**
+         * Get ID of currently logged in user
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_user_id/
          * @return {Promise}
          */
         this.getUserId = function()
@@ -416,6 +472,8 @@
 
         /**
          * Checks if SugarCRM accepts current session id
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/seamless_login/
+         *
          * @return {Promise}
          */
         this.isAuthenticated = function()
@@ -441,6 +499,8 @@
         };
 
         /**
+         * Generic Post method
+         *
          * @param {String}      method
          * @param {Object}      data
          * @param {{}}          [config]

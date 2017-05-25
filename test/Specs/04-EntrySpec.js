@@ -32,6 +32,28 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
         {
 
 
+            it("should retrieve a single record by id", function(done)
+            {
+                sugar.getEntry(moduleToTest, '1', {select_fields: ['id', 'user_name', 'full_name']})
+                    .then(function(response)
+                    {
+                        expect(_.isArray(response["entry_list"])).toBeTruthy();
+                        expect(_.size(response["entry_list"])).toBe(1);
+                        var entry = _.first(response["entry_list"]);
+                        expect(_.isObject(entry)).toBeTruthy();
+                        expect(entry["id"]).toBe("1");
+                        expect(entry["user_name"]).toBe("admin");
+                        expect(entry["full_name"]).toBe("Administrator");
+
+                        done();
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
+
             it("should retrieve filtered records (param: query)", function(done)
             {
                 sugar.getEntries(moduleToTest, {ids:[1]})
