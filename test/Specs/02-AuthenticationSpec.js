@@ -4,8 +4,8 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
         var sugar
             , crm_url = 'http://gsi.crm.mekit.it'
             , crm_rest_version = 'v4_1'
-            , username = 'user1'
-            , password = 'user1'
+            , username = 'admin'
+            , password = 'admin'
             ;
 
         beforeAll(function()

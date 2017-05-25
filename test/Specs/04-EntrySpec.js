@@ -34,6 +34,27 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
 
             it("should retrieve filtered records (param: query)", function(done)
             {
+                sugar.getEntries(moduleToTest, {ids:[1]})
+                    .then(function(response)
+                    {
+                        expect(_.isArray(response["entry_list"])).toBeTruthy();
+                        expect(_.size(response["entry_list"])).toBe(1);
+                        var entry = _.first(response["entry_list"]);
+                        expect(_.isObject(entry)).toBeTruthy();
+                        expect(entry["user_name"]).toBe("admin");
+
+                        done();
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
+
+
+            it("should retrieve filtered records (param: query)", function(done)
+            {
                 sugar.getEntryList(moduleToTest, {query: 'users.user_name = "admin"'})
                     .then(function(response)
                     {

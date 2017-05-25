@@ -62,12 +62,69 @@
 
         var AXIOS = axios.create(axiosDefaultConfig);
 
+
+
+
         /**
-         * Get a list of entries from module
+         * Get a list of entries from module (using a list of IDs)
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_entries/
+         *
+         * @param {String}      module_name
+         * @param {Object}      parameters
+         * @param {Array}       parameters.ids
+         * @param {Array}       [parameters.select_fields]
+         * @param {Array}       [parameters.link_name_to_fields_array]
+         * @param {Boolean}     [parameters.track_view]
+         *
+         * @return {Promise}
+         */
+        this.getEntries = function(module_name, parameters)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if (_.isNull(module_name) || _.isEmpty(module_name)) {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+
+                var method = 'get_entries';
+                var methodParams = {
+                    session: session_id,
+                    module_name: module_name,
+                    ids: [],
+                    select_fields: [],
+                    link_name_to_fields_array: [],
+                    track_view: false
+                };
+                methodParams = self.mapObjectProperties(methodParams, parameters);
+
+                self.post(method, methodParams)
+                    .then(function(response)
+                    {
+                        response = self.fixEntryListInResponse(response);
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
+         * Get a list of entries from module (using sql WHERE for filtering)
          * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/get_entry_list/
          *
-         * @param {string} module_name
-         * @param {{}} [parameters]
+         * @param {String}      module_name
+         * @param {Object}      [parameters]
+         * @param {String}      [parameters.query]
+         * @param {String}      [parameters.order_by]
+         * @param {Integer}     [parameters.offset]
+         * @param {Array}       [parameters.select_fields]
+         * @param {Array}       [parameters.link_name_to_fields_array]
+         * @param {Integer}     [parameters.max_results]
+         * @param {Boolean}     [parameters.deleted]
+         * @param {Boolean}     [parameters.favorites]
          *
          * @return {Promise}
          */
@@ -97,19 +154,7 @@
                 self.post(method, methodParams)
                     .then(function(response)
                     {
-                        // Fix 'name_value_list' in entries
-                        if (_.isArray(response["entry_list"])) {
-                            var entries = response["entry_list"];
-                            _.each(entries, function(entry)
-                            {
-                                if (_.isObject(entry["name_value_list"])) {
-                                    var entryData = self.nameValueListDecompile(entry["name_value_list"]);
-                                    entry = _.extend(entry, entryData);
-                                    delete entry["name_value_list"];
-                                }
-                            });
-                        }
-
+                        response = self.fixEntryListInResponse(response);
                         fulfill(response);
                     })
                     .catch(function(error)
@@ -121,8 +166,8 @@
         };
 
         /**
-         * @param {string} module_name
-         * @param {string} [fields]
+         * @param {String} module_name
+         * @param {Array} [fields]
          * @return {Promise}
          */
         this.getModuleFields = function(module_name, fields)
@@ -152,7 +197,7 @@
         };
 
         /**
-         * @param {string} [filter]
+         * @param {String} [filter]
          * @return {Promise}
          */
         this.getAvailableModules = function(filter)
@@ -228,8 +273,8 @@
         };
 
         /**
-         * @param {string} username
-         * @param {string} password
+         * @param {String} username
+         * @param {String} password
          * @return {Promise}
          */
         this.login = function(username, password)
@@ -355,9 +400,9 @@
         };
 
         /**
-         * @param {string}  method
-         * @param {{}}      data
-         * @param {{}}      [config]
+         * @param {String}      method
+         * @param {Object}      data
+         * @param {{}}          [config]
          *
          * @return {Promise}
          */
@@ -416,9 +461,33 @@
         //------------------------------------------------------------------------------------------------------------//
         /**
          * @todo: move out to some helper class
+         * Loop through entries and explode name_value_list out into the entry object
+         *
+         * @param {Object} response
+         * @return {Object}
+         */
+        this.fixEntryListInResponse = function(response)
+        {
+            if (_.isArray(response["entry_list"])) {
+                var entries = response["entry_list"];
+                _.each(entries, function(entry)
+                {
+                    if (_.isObject(entry["name_value_list"])) {
+                        var entryData = self.nameValueListDecompile(entry["name_value_list"]);
+                        entry = _.extend(entry, entryData);
+                        delete entry["name_value_list"];
+                    }
+                });
+            }
+            return response;
+        };
+
+        /**
+         * @todo: move out to some helper class
          *
          * Map(copy) over property values from extension to original
          * only for properties already defined on original
+         * Throws error if invalid property is passed in extension! [could make this optional]
          *
          * @param {{}} original
          * @param {{}} extension
@@ -428,6 +497,12 @@
         {
             if (_.isObject(original) && !_.isEmpty(original) && _.isObject(extension) && !_.isEmpty(extension)) {
                 var allowedProps = _.keys(original);
+                var extProps = _.keys(extension);
+                var invalidProps = _.difference(extProps, allowedProps);
+                if(!_.isEmpty(invalidProps))
+                {
+                    throw new Error("Invalid properties detected: " + JSON.stringify(invalidProps));
+                }
                 _.each(allowedProps, function(prop)
                 {
                     if (_.has(extension, prop)) {
