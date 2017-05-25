@@ -63,6 +63,71 @@
         var AXIOS = axios.create(axiosDefaultConfig);
 
 
+        /**
+         * Create|Update a single entry in module by ID
+         * if ID is set the record with tht ID will be updated
+         * if ID is set to FALSE a new record will be created
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.7/Integration/Web_Services/v1_-_v4.1/Methods/set_entry/
+         *
+         * WORD OF WARNING: Even though it is documented, the usage of '{new_with_id:true}' for creating new records
+         * does not work resulting in creating a record (for the first time) with id='' and from then on failing with:
+         * 'Duplicate entry '' for key 'PRIMARY'!
+         * When creating new records the 'id' must be simply omitted from the name_value_list element.
+         *
+         * @param {String}          module_name
+         * @param {String|Boolean}  id
+         * @param {Object}          parameters
+         *
+         * @return {Promise}
+         */
+        this.setEntry = function(module_name, id, parameters)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if (_.isNull(module_name) || _.isEmpty(module_name) || !_.isString(module_name)) {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+
+                var isNewRecord = false;
+                if(_.isBoolean(id) && id === false) {
+                    isNewRecord = true;
+                } else if (_.isNull(id) || _.isEmpty(id) || !_.isString(id)) {
+                    return reject(new Error("Parameter 'id' must be provided!"));
+                }
+
+                if(!isNewRecord)
+                {
+                    parameters = _.extend({id:id}, parameters);
+                }
+                var nameValueList = self.nameValueListCompile(parameters);
+
+                var method = 'set_entry';
+                var methodParams = {
+                    session: session_id,
+                    module_name: module_name,
+                    name_value_list: nameValueList
+                };
+
+                self.post(method, methodParams)
+                    .then(function(response)
+                    {
+
+                        if(!_.isUndefined(response["entry_list"]))
+                        {
+                            // entry list fixer expects a different format
+                            var nameValueList = response["entry_list"];
+                            response["entry_list"] = [{name_value_list: nameValueList}];
+                        }
+                        response = self.fixEntryListInResponse(response);
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
 
         /**
          * Get a single entry from module by ID
@@ -616,17 +681,29 @@
 
         /**
          * @todo: move out to some helper class
+         *
+         * @param {Object} data
+         * @return {Array}
          */
-        this.nameValueListCompile = function()
+        this.nameValueListCompile = function(data)
         {
+            var answer = [];
+            _.mapObject(data, function(value, key)
+            {
+                answer.push({
+                    name: key,
+                    value: value
+                });
+            });
 
+            return answer;
         };
 
         /**
          * @todo: move out to some helper class
          *
-         * @param {{}} list
-         * @return {{}}
+         * @param {Object} list
+         * @return {Object}
          */
         this.nameValueListDecompile = function(list)
         {

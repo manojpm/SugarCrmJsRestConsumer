@@ -31,6 +31,35 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
         describe("Entry", function()
         {
 
+            it("should create a new record", function(done)
+            {
+                var recordData = {last_name: "Jakab", first_name: "Adam"}
+                sugar.setEntry("Contacts", false, recordData)
+                    .then(function(response)
+                    {
+                        expect(_.isObject(response)).toBeTruthy();
+                        expect(_.isString(response["id"])).toBeTruthy();
+                        expect(_.isArray(response["entry_list"])).toBeTruthy();
+                        expect(_.size(response["entry_list"])).toBe(1);
+                        var entry = _.first(response["entry_list"]);
+                        expect(_.isObject(entry)).toBeTruthy();
+
+                        //Confront sent data with recieved record data
+                        _.each(_.keys(recordData), function(k) {
+                            expect(entry[k]).toBe(recordData[k]);
+                        });
+
+                        console.log(entry);
+
+                        done();
+                    })
+                    .catch(function(err)
+                    {
+                        done.fail(err);
+                    })
+                ;
+            });
+
 
             it("should retrieve a single record by id", function(done)
             {
