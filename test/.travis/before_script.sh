@@ -10,7 +10,10 @@ sudo a2enmod rewrite
 sudo service apache2 restart
 
 # Install Php
-#sudo apt-get install php5-cli php5-cgi php5-curl php5-gd php5-intl php5-mcrypt php5-mysql
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:ondrej/php
+sudo apt-get update
+sudo apt-get install php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mysql
 php -v
 
 # Get SuiteCRM
