@@ -4,16 +4,16 @@
 sudo apt-get update
 
 # Install apache
-sudo apt-get install apache2
+sudo apt-get install -y apache2
 sudo a2enmod actions
 sudo a2enmod rewrite
 sudo service apache2 restart
 
-# Install Php
+# Install Php 5.6
 sudo apt-get install software-properties-common
-sudo add-apt-repository ppa:ondrej/php
+sudo add-apt-repository ppa:ondrej/php -y
 sudo apt-get update
-sudo apt-get install php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mysql
+sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mysql
 php -v
 
 # Get SuiteCRM
