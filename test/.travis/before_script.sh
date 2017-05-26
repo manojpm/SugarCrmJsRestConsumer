@@ -14,7 +14,7 @@ sudo service apache2 restart
 sudo apt-get install software-properties-common
 sudo add-apt-repository ppa:ondrej/php -y
 sudo apt-get update
-sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql
+sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
 php -v
 
 # Get SuiteCRM
@@ -36,7 +36,7 @@ ls -la
 php tests/testinstall.php
 
 # Configure Apache
-cat /home/travis/build/adamjakab/SugarCrmJsRestConsumer/test/.travis/apache-virtualhost | sed -e "s,PATH,~/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
+cat /home/travis/build/adamjakab/SugarCrmJsRestConsumer/test/.travis/apache-virtualhost | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
 sudo service apache2 restart
 
 cat /etc/apache2/sites-available/default
