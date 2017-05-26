@@ -1,5 +1,8 @@
 # SugarCrm JS Rest Consumer
 
+[![npm version](https://img.shields.io/npm/v/sugarcrm-js-rest-consumer.svg?style=flat-square)](https://www.npmjs.com/package/sugarcrm-js-rest-consumer)
+[![build staus](https://img.shields.io/travis/adamjakab/SugarCrmJsRestConsumer.svg?style=flat-square)](https://travis-ci.org/adamjakab/SugarCrmJsRestConsumer)
+
 Promise based javascript client for SugarCRM Rest API v.4.1 for browser and node.js
  
 ## Features/Implemented methods
