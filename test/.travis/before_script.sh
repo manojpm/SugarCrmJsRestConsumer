@@ -11,7 +11,7 @@ sudo service apache2 restart
 
 # Install Php
 #sudo apt-get install php5-cli php5-cgi php5-curl php5-gd php5-intl php5-mcrypt php5-mysql
-#php -v
+php -v
 
 # Get SuiteCRM
 pwd
