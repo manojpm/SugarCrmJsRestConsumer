@@ -10,7 +10,7 @@ sudo service apache2 restart
 pwd
 cd ~
 mkdir httpdocs
-git git clone https://github.com/salesagility/SuiteCRM.git httpdocs
+git clone https://github.com/salesagility/SuiteCRM.git httpdocs
 cd httpdocs
 git checkout tags/v7.8.3
 composer selfupdate
