@@ -1,6 +1,6 @@
 # SugarCrm JS Rest Consumer
 
-A promise based javascript rest client for SugarCRM Rest API v.4.1 for the browser and node.js
+Promise based javascript client for SugarCRM Rest API v.4.1 for browser and node.js
  
 ## Features/Implemented methods
 - login
