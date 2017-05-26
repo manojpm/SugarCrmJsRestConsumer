@@ -4,6 +4,21 @@
 sudo apt-get install apache2
 sudo a2enmod actions
 sudo a2enmod rewrite
+sudo service apache2 restart
+
+# Get SuiteCRM
+pwd
+cd ~
+mkdir httpdocs
+git git clone https://github.com/salesagility/SuiteCRM.git httpdocs
+cd httpdocs
+git checkout tags/v7.8.3
+composer selfupdate
+composer install --no-interaction
+cp tests/travis_config_si.php config_si.php
+php tests/testinstall.php
+
+
 
 #- echo "export PATH=/home/vagrant/.phpenv/bin:$PATH" | sudo tee -a /etc/apache2/envvars > /dev/null
 #- echo "$(curl -fsSL https://gist.github.com/roderik/16d751c979fdeb5a14e3/raw/gistfile1.txt)" | sudo tee /etc/apache2/conf.d/phpconfig > /dev/null
