@@ -1,7 +1,7 @@
 {
   "name": "sugarcrm-js-rest-consumer",
   "main": "SugarCrmJsRestConsumer.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "SugarCRM REST API(v4.1) Client in node.js",
   "author": "Adam Jakab",
   "repository": {
