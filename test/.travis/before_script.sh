@@ -35,6 +35,13 @@ php composer.phar install --no-interaction
 ls -la
 php tests/testinstall.php
 
+# Configure Apache
+cat /home/travis/build/adamjakab/SugarCrmJsRestConsumer/test/.travis/apache-virtualhost | sed -e "s,PATH,~/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
+sudo service apache2 restart
+
+cat /etc/apache2/sites-available/default
+
+
 wget -qO- http://localhost
 
 
@@ -50,3 +57,27 @@ wget -qO- http://localhost
 #- app/console doctrine:database:create
 #- app/console doctrine:schema:update --force
 #- app/console doctrine:fixtures:load
+
+
+#SuexecUserGroup "#1020" "#1021"
+#ServerName
+## ServerAlias
+#
+#DocumentRoot /home/httpdocs
+#
+
+#
+#DirectoryIndex index.php index.html index.htm
+#
+#<Directory /home/httpdocs>
+#Options -Indexes +SymLinksIfOwnerMatch +ExecCGI
+#allow from all
+#AllowOverride All Options=ExecCGI,Includes,IncludesNOEXEC,Indexes,MultiViews,SymLinksIfOwnerMatch,FollowSymLinks
+#Require all granted
+#AddType application/x-httpd-php .php
+#AddHandler fcgid-script .php
+#FCGIWrapper /home//fcgi-bin/php5.fcgi .php
+#</Directory>
+#RemoveHandler .php
+#RemoveHandler .php5
+#FcgidMaxRequestLen 1073741824
