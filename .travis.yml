@@ -1,3 +1,16 @@
 language: node_js
 node_js:
   - node
+sudo: required
+before_script:
+  - test/.travis/before_script.sh
+  # - composer self-update
+  # - composer install --no-interaction
+  # - ./console -v app:install --database-name=suitecrm --database-username=travis --install-admin-username=admin --install-admin-password=admin --install-system-name="SuiteCRM Travis Build" --install-create-database --no-interaction
+script:
+  - vendor/bin/phpunit
+services:
+  - mysql
+branches:
+  only:
+    - master
