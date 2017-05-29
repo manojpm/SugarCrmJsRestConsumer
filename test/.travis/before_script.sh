@@ -5,28 +5,35 @@ REPOPATH="$(pwd)"       # /home/travis/build/adamjakab/SugarCrmJsRestConsumer
 HTTPPATH="~/httpdocs"   # /home/travis/httpdocs
 
 # Init & Install packages
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository ppa:ondrej/php -y
-sudo apt-get update
-sudo apt-get install -y wget \
-    apache2 libapache2-mod-php5.6 \
-    php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
+#sudo apt-get install -y software-properties-common
+#sudo add-apt-repository ppa:ondrej/php -y
+#sudo apt-get update
+#sudo apt-get install -y wget \
+#    apache2 libapache2-mod-php5.6 \
+#    php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
 
 # Get SuiteCRM
 mkdir ${HTTPPATH}
 cd ${HTTPPATH}
+ls -lan
 cp ${REPOPATH}/test/.travis/index.php ./index.php
 #git clone https://github.com/salesagility/SuiteCRM.git httpdocs
 #cd httpdocs
 #git checkout tags/v7.8.3
 
 # Configure Php
+mkdir /home/travis/tmp
+mkdir -p /home/travis/etc/php5
+mkdir /home/travis/fcgi-bin
+cp ${REPOPATH}/test/.travis/php.ini /home/travis/etc/php5
+cp ${REPOPATH}/test/.travis/php5.fcgi /home/travis/fcgi-bin
+chmod 744 /home/travis/fcgi-bin/php5.fcgi
 php -v
 
+# echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 # Configure Apache
-sudo a2enmod actions
-sudo a2enmod rewrite
+sudo a2enmod alias actions rewrite fcgid suexec
 cat ${REPOPATH}/test/.travis/apache-virtualhost | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
 sudo service apache2 restart
 
@@ -37,6 +44,7 @@ sudo service apache2 restart
 #php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 #php composer-setup.php
 #php -r "unlink('composer-setup.php');"
+#php composer.phar install --no-interaction
 #php tests/testinstall.php
 
 
@@ -45,7 +53,7 @@ sudo service apache2 restart
 wget -qO- http://localhost
 
 
-
+echo ${CUSTOM_VAR}
 
 #- echo "export PATH=/home/vagrant/.phpenv/bin:$PATH" | sudo tee -a /etc/apache2/envvars > /dev/null
 #- echo "$(curl -fsSL https://gist.github.com/roderik/16d751c979fdeb5a14e3/raw/gistfile1.txt)" | sudo tee /etc/apache2/conf.d/phpconfig > /dev/null

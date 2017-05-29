@@ -1,27 +1,33 @@
 <VirtualHost *:80>
-        ServerAdmin webmaster@localhost
+    # SuexecUserGroup "#1020" "#1021"
+    # ServerName localhost
+    # ServerAlias www.localhost
+    ServerAdmin webmaster@localhost
 
-        DocumentRoot PATH
+    DocumentRoot PATH
 
-        DirectoryIndex index.php index.html index.htm
+    # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+    LogLevel warn
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
 
-        ErrorLog ${APACHE_LOG_DIR}/error.log
+    DirectoryIndex index.php index.html index.htm
 
-        # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
-        LogLevel warn
+    #<Directory />
+            #Options FollowSymLinks
+            #AllowOverride All
+    #</Directory>
 
-        CustomLog ${APACHE_LOG_DIR}/access.log combined
+    <Directory PATH >
+            Options Indexes +SymLinksIfOwnerMatch +ExecCGI
+            AllowOverride All Options=ExecCGI,Includes,IncludesNOEXEC,Indexes,MultiViews,SymLinksIfOwnerMatch,FollowSymLinks
+            Order allow,deny
+            allow from all
+            AddType application/x-httpd-php .php
+            AddHandler fcgid-script .php
+            FCGIWrapper /home/travis/fcgi-bin/php5.fcgi .php
+    </Directory>
 
-        <Directory />
-                Options FollowSymLinks
-                AllowOverride All
-        </Directory>
-
-        <Directory PATH >
-                Options Indexes FollowSymLinks MultiViews
-                AllowOverride All
-                Order allow,deny
-                allow from all
-        </Directory>
+    FcgidMaxRequestLen 1073741824
 
 </VirtualHost>
