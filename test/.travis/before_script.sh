@@ -2,7 +2,7 @@
 
 # Variables
 REPOPATH="$(pwd)"       # /home/travis/build/adamjakab/SugarCrmJsRestConsumer
-HTTPPATH="~/httpdocs"   # /home/travis/httpdocs
+HTTPPATH="/home/travis//httpdocs"   # /home/travis/httpdocs
 
 # Init & Install packages
 #sudo apt-get install -y software-properties-common
