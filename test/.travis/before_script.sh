@@ -14,7 +14,7 @@ sudo service apache2 restart
 sudo apt-get install software-properties-common
 sudo add-apt-repository ppa:ondrej/php -y
 sudo apt-get update
-sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
+sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml libapache2-mod-php
 php -v
 
 # Get SuiteCRM
@@ -32,16 +32,14 @@ php composer-setup.php
 php -r "unlink('composer-setup.php');"
 php composer.phar install --no-interaction
 
-ls -la
+# Execute the installer of SuiteCrm
 php tests/testinstall.php
 
 # Configure Apache
 cat /home/travis/build/adamjakab/SugarCrmJsRestConsumer/test/.travis/apache-virtualhost | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
 sudo service apache2 restart
 
-cat /etc/apache2/sites-available/default
-
-
+# Get
 wget -qO- http://localhost
 
 
