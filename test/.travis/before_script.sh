@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+sudo cat /etc/apache2/sites-available/000-default.conf
+ls -la home/travis/httpdocs
+
+
+wget -qO- http://localhost
+cat /var/log/apache2/error.log
+
+
+exit 0
+
 # Variables
 REPOPATH="$(pwd)"       # /home/travis/build/adamjakab/SugarCrmJsRestConsumer
 HTTPPATH="/home/travis//httpdocs"   # /home/travis/httpdocs
@@ -65,26 +75,3 @@ wget -qO- http://localhost
 #- app/console doctrine:schema:update --force
 #- app/console doctrine:fixtures:load
 
-
-#SuexecUserGroup "#1020" "#1021"
-#ServerName
-## ServerAlias
-#
-#DocumentRoot /home/httpdocs
-#
-
-#
-#DirectoryIndex index.php index.html index.htm
-#
-#<Directory /home/httpdocs>
-#Options -Indexes +SymLinksIfOwnerMatch +ExecCGI
-#allow from all
-#AllowOverride All Options=ExecCGI,Includes,IncludesNOEXEC,Indexes,MultiViews,SymLinksIfOwnerMatch,FollowSymLinks
-#Require all granted
-#AddType application/x-httpd-php .php
-#AddHandler fcgid-script .php
-#FCGIWrapper /home//fcgi-bin/php5.fcgi .php
-#</Directory>
-#RemoveHandler .php
-#RemoveHandler .php5
-#FcgidMaxRequestLen 1073741824
