@@ -1,3 +1,4 @@
+dist: trusty
 language: node_js
 
 sudo: required
@@ -24,6 +25,10 @@ addons:
       - libapache2-mod-fcgid
       - libgd3
       - libxml2
+      - libtiff5
+      - libfontconfig1
+      - libedit2
+      - php-common
       - php5.6-cgi
       - php5.6-cli
       - php5.6-common
