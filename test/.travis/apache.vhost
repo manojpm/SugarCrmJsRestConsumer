@@ -1,5 +1,5 @@
 <VirtualHost *:80>
-    # SuexecUserGroup "#1020" "#1021"
+    SuexecUserGroup "#UID" "#GID"
     ServerName localhost
     # ServerAlias travis.local
     ServerAdmin webmaster@localhost

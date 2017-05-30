@@ -14,6 +14,7 @@ cache:
 env:
   global:
     - VHOST_FILE="$TRAVIS_BUILD_DIR/test/.travis/apache.vhost"
+    - VHOST_DEF_CONF="/etc/apache2/sites-available/000-default.conf"
     - PHP_INI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php.ini"
     - PHP_FCGI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php5.fcgi"
 
@@ -59,7 +60,12 @@ before_script:
 
   # Configure Apache
   - sudo a2enmod alias actions rewrite fcgid suexec
-  - cat $VHOST_FILE | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/000-default.conf > /dev/null
+  - sudo cp -f $VHOST_FILE $VHOST_DEF_CONF
+  - sudo sed -e "s,PATH,/home/travis/httpdocs,g" --in-place $VHOST_DEF_CONF
+  - sudo sed -e "s,UID,$UID,g" --in-place $VHOST_DEF_CONF
+  - sudo sed -e "s,GID,$(echo $GROUPS),g" --in-place $VHOST_DEF_CONF
+  # - cat $VHOST_DEF_CONF | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee $VHOST_DEF_CONF > /dev/null
+
   - sudo service apache2 restart
 
   # Temp test scripts
