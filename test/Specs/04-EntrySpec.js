@@ -2,7 +2,7 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
     function(_, Promise, SugarCrmJsRestConsumer)
     {
         var sugar
-            , crm_url = 'http://travis.local'
+            , crm_url = 'http://gsi.crm.mekit.it'
             , crm_rest_version = 'v4_1'
             , username = 'admin'
             , password = 'admin'
