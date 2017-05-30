@@ -1,7 +1,7 @@
 <VirtualHost *:80>
     # SuexecUserGroup "#1020" "#1021"
-    # ServerName localhost
-    # ServerAlias www.localhost
+    ServerName localhost
+    # ServerAlias travis.local
     ServerAdmin webmaster@localhost
 
     DocumentRoot PATH
@@ -19,7 +19,7 @@
     </Directory>
 
     <Directory PATH >
-            Options Indexes +SymLinksIfOwnerMatch +ExecCGI
+            Options +Indexes +SymLinksIfOwnerMatch +ExecCGI
             AllowOverride All Options=ExecCGI,Includes,IncludesNOEXEC,Indexes,MultiViews,SymLinksIfOwnerMatch,FollowSymLinks
             Order allow,deny
             allow from all
