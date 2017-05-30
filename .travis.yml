@@ -96,13 +96,11 @@ before_script:
   - php composer.phar install --no-interaction
   - php tests/testinstall.php
 
-
-  # Temp test scripts
+  # Temporary test scripts @todo: remove me!
   - $TRAVIS_BUILD_DIR/test/.travis/before_script.sh
 
 script:
-#  - npm test
-  - echo "TEST GOES HERE ;)"
+  - npm test
 
 services:
   - mysql

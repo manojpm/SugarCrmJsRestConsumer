@@ -2,7 +2,7 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
     function(_, SugarCrmJsRestConsumer)
     {
         var sugar
-            , crm_url = 'http://gsi.crm.mekit.it'
+            , crm_url = 'http://travis.local'
             , crm_rest_version = 'v4_1'
             , session_id = ''
             ;
