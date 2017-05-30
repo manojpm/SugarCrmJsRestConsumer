@@ -53,7 +53,7 @@ before_script:
   - cd $HOME/httpdocs
   - cp $TRAVIS_BUILD_DIR/test/.travis/index.php ./index.php
   - cp $PHP_INI_FILE $HOME/etc/php5
-  - cp PHP_FCGI_FILE $HOME/fcgi-bin
+  - cp $PHP_FCGI_FILE $HOME/fcgi-bin
   - chmod 744 $HOME/fcgi-bin/php5.fcgi
   - php -v
   - php -m
