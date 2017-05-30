@@ -23,7 +23,7 @@ addons:
       - apache2
       - libapache2-mod-fcgid
       - libgd3
-      - libicu52
+      - libicu56
       - libxml2
       - php5.6-cgi
       - php5.6-cli
