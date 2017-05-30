@@ -45,7 +45,7 @@ install:
   #
 
 before_script:
-  - echo "PHP INI FILE: $PHP_INI_FILE"
+  - echo "PHP INI FILE -  $PHP_INI_FILE"
   - mkdir $HOME/httpdocs
   - mkdir $HOME/tmp
   - mkdir $HOME/fcgi-bin
