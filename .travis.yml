@@ -13,7 +13,7 @@ cache:
 env:
   global:
     - VHOST_FILE="apache.vhost"
-    - PHP_INI_FILE="%TRAVIS_BUILD_DIR%/test/.travis/php.ini"
+    - PHP_INI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php.ini"
 
 addons:
   apt:
@@ -23,11 +23,6 @@ addons:
     packages:
       - apache2
       - libapache2-mod-fcgid
-#      - libgd3
-#      - libxml2
-#      - libtiff5
-#      - libedit2
-      - php-common
       - php5.6-cgi
       - php5.6-cli
       - php5.6-common
@@ -43,11 +38,17 @@ addons:
       - php5.6-xml
 
 before_install:
+  #
 
 install:
+  #
 
 before_script:
-  - test/.travis/before_script.sh
+  - mkdir $HOME/httpdocs
+  - mkdir $HOME/tmp
+  - mkdir $HOME/etc/php5
+  - mkdir $HOME/fcgi-bin
+  - echo "PHP INI FILE: PHP_INI_FILE"
 
 script:
 #  - npm test
