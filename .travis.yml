@@ -2,18 +2,17 @@ language: node_js
 
 sudo: required
 
-env:
-  global:
-    # Set build specific variables ...
-    - VHOST_FILE="apache.vhost"
-    - PHP_INI_FILE="%TRAVIS_BUILD_DIR%/test/.travis/php.ini"
-
 node_js:
   - node
 
 cache:
   directories:
     - $HOME/.composer/cache
+
+env:
+  global:
+    - VHOST_FILE="apache.vhost"
+    - PHP_INI_FILE="%TRAVIS_BUILD_DIR%/test/.travis/php.ini"
 
 before_install:
   - sudo apt-get install -y software-properties-common
@@ -22,8 +21,9 @@ before_install:
   - sudo apt-get -qq update
 
 install:
-  - sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-json php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
-  - sudo apt-get install -y apache2 libapache2-mod-fcgid
+  - sudo apt-cache search keyword
+#  - sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-json php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
+#  - sudo apt-get install -y apache2 libapache2-mod-fcgid
 
 before_script:
 
