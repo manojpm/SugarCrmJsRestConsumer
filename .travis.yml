@@ -45,12 +45,15 @@ install:
   #
 
 before_script:
+  - echo "PHP INI FILE: $PHP_INI_FILE"
   - mkdir $HOME/httpdocs
   - mkdir $HOME/tmp
   - mkdir $HOME/fcgi-bin
   - mkdir -p $HOME/etc/php5
+  - cd $HOME/httpdocs
+  - cp $TRAVIS_BUILD_DIR/test/.travis/index.php ./index.php
 
-  - echo "PHP INI FILE: PHP_INI_FILE"
+
 
 script:
 #  - npm test
