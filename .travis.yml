@@ -59,7 +59,8 @@ before_script:
   - php -m
   # Configure Apache
   - sudo a2enmod alias actions rewrite fcgid suexec
-  - cat $VHOST_FILE | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
+  - sudo ls -la /etc/apache2/sites-available
+  - cat $VHOST_FILE | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default.conf > /dev/null
   - sudo service apache2 restart
   - wget -qO- http://localhost
 

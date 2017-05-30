@@ -13,10 +13,10 @@
 
     DirectoryIndex index.php index.html index.htm
 
-    #<Directory />
-            #Options FollowSymLinks
-            #AllowOverride All
-    #</Directory>
+    <Directory />
+            Options FollowSymLinks
+            AllowOverride All
+    </Directory>
 
     <Directory PATH >
             Options Indexes +SymLinksIfOwnerMatch +ExecCGI
