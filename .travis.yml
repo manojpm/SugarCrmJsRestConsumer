@@ -5,7 +5,8 @@ sudo: required
 env:
   global:
     # Set build specific variables ...
-    - VHOST_FILE="JACK WAS HERE!"
+    - VHOST_FILE="apache.vhost"
+    - PHP_INI_FILE="%TRAVIS_BUILD_DIR%/test/.travis/php.ini"
 
 node_js:
   - node
@@ -23,10 +24,8 @@ install:
   - sudo apt-get install -y apache2 libapache2-mod-fcgid
 
 before_script:
+
   - test/.travis/before_script.sh
-  # - composer self-update
-  # - composer install --no-interaction
-  # - ./console -v app:install --database-name=suitecrm --database-username=travis --install-admin-username=admin --install-admin-password=admin --install-system-name="SuiteCRM Travis Build" --install-create-database --no-interaction
 
 script:
   - npm test
