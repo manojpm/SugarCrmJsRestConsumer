@@ -1,4 +1,5 @@
 dist: trusty
+
 language: node_js
 
 sudo: required
@@ -45,7 +46,6 @@ install:
   #
 
 before_script:
-  - echo "PHP INI FILE -  $PHP_INI_FILE"
   - mkdir $HOME/httpdocs
   - mkdir $HOME/tmp
   - mkdir $HOME/fcgi-bin
@@ -59,8 +59,8 @@ before_script:
   - php -m
   # Configure Apache
   - sudo a2enmod alias actions rewrite fcgid suexec
-  - sudo ls -la /etc/apache2/sites-available
-  - cat $VHOST_FILE | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default.conf > /dev/null
+  - sudo cat /etc/apache2/sites-available/000-default.conf
+  - cat $VHOST_FILE | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/000-default.conf > /dev/null
   - sudo service apache2 restart
   - wget -qO- http://localhost
 
