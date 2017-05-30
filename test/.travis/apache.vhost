@@ -1,6 +1,6 @@
 <VirtualHost *:80>
     SuexecUserGroup "#UID" "#GID"
-    ServerName travis.local
+    ServerName VHOST_FQDN
     ServerAlias www.VHOST_FQDN
     ServerAdmin webmaster@localhost
 

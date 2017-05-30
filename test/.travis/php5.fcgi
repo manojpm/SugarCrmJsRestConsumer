@@ -7,4 +7,4 @@ PHP_FCGI_MAX_REQUESTS=99999
 export PHP_FCGI_MAX_REQUESTS
 SCRIPT_FILENAME=$PATH_TRANSLATED
 export SCRIPT_FILENAME
-exec /usr/bin/php5-cgi
+exec /usr/bin/php-cgi5.6

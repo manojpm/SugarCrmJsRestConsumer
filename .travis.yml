@@ -76,14 +76,15 @@ before_script:
   - sudo cp -f $TRAVIS_BUILD_DIR/test/.travis/apache.vhost $VHOST_DEF_CONF
   - sudo sed -e "s,PATH,$VHOST_FOLDER,g" --in-place $VHOST_DEF_CONF
   - sudo sed -e "s,UID,$UID,g" --in-place $VHOST_DEF_CONF
-  - sudo sed -e "s,GID,$(echo $GROUPS),g" --in-place $VHOST_DEF_CONF
+  - sudo sed -e "s,GID,$GROUPS,g" --in-place $VHOST_DEF_CONF
   - sudo sed -e "s,VHOST_FQDN,$VHOST_FQDN,g" --in-place $VHOST_DEF_CONF
+  - sudo a2ensite 001-travis
+  - sudo service apache2 restart
 
   # Configure hosts file
   - echo "127.0.0.1       $VHOST_FQDN" | sudo tee -a /etc/hosts
 
-  - sudo a2ensite 001-travis
-  - sudo service apache2 reload
+
 
   # Temp test scripts
   - $TRAVIS_BUILD_DIR/test/.travis/before_script.sh
