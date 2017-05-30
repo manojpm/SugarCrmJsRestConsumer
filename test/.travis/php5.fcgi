@@ -1,5 +1,5 @@
 #!/bin/bash
-PHPRC=$PWD/../etc/php5
+PHPRC=/etc/php5/cgi/
 export PHPRC
 umask 022
 export PHP_FCGI_CHILDREN
