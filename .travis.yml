@@ -17,12 +17,6 @@ env:
     - VHOST_FQDN="travis.local"
     - VHOST_FOLDER="$WWW_FOLDER/travis"
     - FCGI_FOLDER="$WWW_FOLDER/fcgi-bin"
-
-
-#    - VHOST_FILE="$TRAVIS_BUILD_DIR/test/.travis/apache.vhost"
-#    - PHP_INI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php.ini"
-#    - PHP_FCGI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php5.fcgi"
-
     - VHOST_DEF_CONF="/etc/apache2/sites-available/001-travis.conf"
     - PHP_INI_FILE="/etc/php/5.6/cgi/php.ini"
 
@@ -59,7 +53,6 @@ before_script:
   # Setup VHost folder
   - sudo mkdir $VHOST_FOLDER
   - sudo chown $USER:$USER $VHOST_FOLDER
-  - cp $TRAVIS_BUILD_DIR/test/.travis/index.php $VHOST_FOLDER/
 
   # Setup FCGID folder
   - sudo mkdir $FCGI_FOLDER
@@ -84,11 +77,24 @@ before_script:
   # Configure hosts file
   - echo "127.0.0.1       $VHOST_FQDN" | sudo tee -a /etc/hosts
 
+  # Setup VHost folder content
+  # - cp $TRAVIS_BUILD_DIR/test/.travis/index.php $VHOST_FOLDER
+
+  # Setup SuiteCRM in VHost folder
+  - git clone https://github.com/salesagility/SuiteCRM.git $VHOST_FOLDER
+  - cd $VHOST_FOLDER
+  - git checkout tags/v7.8.3
+  - cp $TRAVIS_BUILD_DIR/test/.travis/travis_config_si.php config_si.php
+  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  - php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+  - php composer-setup.php
+  - php -r "unlink('composer-setup.php');"
+  - php composer.phar install --no-interaction
+  - php tests/testinstall.php
 
 
   # Temp test scripts
   - $TRAVIS_BUILD_DIR/test/.travis/before_script.sh
-
 
 script:
 #  - npm test

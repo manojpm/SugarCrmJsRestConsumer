@@ -19,43 +19,6 @@ sudo cat /var/log/apache2/travis_access.log
 
 exit 0
 
-# Variables
-REPOPATH="$(pwd)"       # /home/travis/build/adamjakab/SugarCrmJsRestConsumer
-HTTPPATH="/home/travis//httpdocs"   # /home/travis/httpdocs
-
-# Init & Install packages
-#sudo apt-get install -y software-properties-common
-#sudo add-apt-repository ppa:ondrej/php -y
-#sudo add-apt-repository ppa:ondrej/apache2 -y
-#sudo apt-get update
-#sudo apt-get install -y apache2 libapache2-mod-php5.6 \
-#    php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
-
-# Get SuiteCRM
-mkdir ${HTTPPATH}
-cd ${HTTPPATH}
-ls -lan
-cp ${REPOPATH}/test/.travis/index.php ./index.php
-#git clone https://github.com/salesagility/SuiteCRM.git httpdocs
-#cd httpdocs
-#git checkout tags/v7.8.3
-
-# Configure Php
-mkdir /home/travis/tmp
-mkdir -p /home/travis/etc/php5
-mkdir /home/travis/fcgi-bin
-cp ${REPOPATH}/test/.travis/php.ini /home/travis/etc/php5
-cp ${REPOPATH}/test/.travis/php5.fcgi /home/travis/fcgi-bin
-chmod 744 /home/travis/fcgi-bin/php5.fcgi
-php -v
-
-# echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-
-# Configure Apache
-sudo a2enmod alias actions rewrite fcgid suexec
-cat ${REPOPATH}/test/.travis/apache.vhost | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
-sudo service apache2 restart
-
 
 # Configure SuiteCrm and execute the installer
 #cp /home/travis/build/adamjakab/SugarCrmJsRestConsumer/test/.travis/travis_config_si.php config_si.php
@@ -65,11 +28,6 @@ sudo service apache2 restart
 #php -r "unlink('composer-setup.php');"
 #php composer.phar install --no-interaction
 #php tests/testinstall.php
-
-
-
-# Get
-wget -qO- http://localhost
 
 
 
