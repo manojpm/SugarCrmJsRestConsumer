@@ -17,12 +17,12 @@ env:
 addons:
   apt:
     sources:
-      - sourceline: 'deb http://ppa.launchpad.net/ondrej/php5-5.6/ubuntu trusty main'
+      - sourceline: 'deb http://ppa.launchpad.net/ondrej/php/ubuntu trusty main'
     packages:
       - links
 
 before_install:
-  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E5267A6C
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E5267A6C -y
   - sudo apt-get -qq update
 #  - sudo apt-get install -y software-properties-common
 #  - sudo add-apt-repository ppa:ondrej/php -y
