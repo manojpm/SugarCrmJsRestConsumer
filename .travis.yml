@@ -23,17 +23,17 @@ addons:
     packages:
       - apache2
       - libapache2-mod-fcgid
-      - libgd3
-      - libxml2
-      - libtiff5
-      - libfontconfig1
-      - libedit2
+#      - libgd3
+#      - libxml2
+#      - libtiff5
+#      - libedit2
       - php-common
       - php5.6-cgi
       - php5.6-cli
       - php5.6-common
       - php5.6-curl
       - php5.6-gd
+      - php5.6-intl
       - php5.6-json
       - php5.6-mbstring
       - php5.6-mcrypt

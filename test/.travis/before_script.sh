@@ -34,7 +34,7 @@ php -v
 
 # Configure Apache
 sudo a2enmod alias actions rewrite fcgid suexec
-cat ${REPOPATH}/test/.travis/apache-virtualhost | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
+cat ${REPOPATH}/test/.travis/apache.vhost | sed -e "s,PATH,/home/travis/httpdocs,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
 sudo service apache2 restart
 
 
