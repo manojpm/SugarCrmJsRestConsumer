@@ -72,7 +72,7 @@ before_script:
 
   # Configure Apache
   - sudo a2enmod alias actions rewrite fcgid suexec include
-  - sudo cp -f $VHOST_FILE $VHOST_DEF_CONF
+  - sudo cp -f $TRAVIS_BUILD_DIR/test/.travis/apache.vhost $VHOST_DEF_CONF
   - sudo sed -e "s,PATH,$VHOST_FOLDER,g" --in-place $VHOST_DEF_CONF
   - sudo sed -e "s,UID,$UID,g" --in-place $VHOST_DEF_CONF
   - sudo sed -e "s,GID,$(echo $GROUPS),g" --in-place $VHOST_DEF_CONF
