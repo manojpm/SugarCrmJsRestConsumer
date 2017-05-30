@@ -11,6 +11,7 @@ cache:
     - $HOME/.composer/cache
 
 env:
+  - SH=bash
   global:
     - VHOST_FILE="apache.vhost"
     - PHP_INI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php.ini"
@@ -46,8 +47,9 @@ install:
 before_script:
   - mkdir $HOME/httpdocs
   - mkdir $HOME/tmp
-  - mkdir $HOME/etc/php5
   - mkdir $HOME/fcgi-bin
+  - mkdir -p $HOME/etc/php5
+
   - echo "PHP INI FILE: PHP_INI_FILE"
 
 script:
