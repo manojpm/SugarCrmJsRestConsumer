@@ -22,15 +22,21 @@ addons:
     packages:
       - apache2
       - libapache2-mod-fcgid
-      - php5.6-cli
+      - libgd3
+      - libicu52
+      - libxml2
       - php5.6-cgi
+      - php5.6-cli
+      - php5.6-common
       - php5.6-curl
       - php5.6-gd
       - php5.6-intl
       - php5.6-json
-      - php5.6-mcrypt
       - php5.6-mbstring
+      - php5.6-mcrypt
       - php5.6-mysql
+      - php5.6-opcache
+      - php5.6-readline
       - php5.6-xml
 
 before_install:
