@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
 echo "---CONF---"
-sudo cat /etc/apache2/sites-available/000-default.conf
-ls -la /home/travis/httpdocs
+sudo cat /etc/apache2/sites-available/001-travis.conf
+ls -la /var/www/travis
+ls -la /var/www/fcgi-bin
 sudo /usr/lib/apache2/suexec -V
 
 echo "---REQ---"
-wget -qO- http://localhost
+wget -qO- http://travis.local
 
 echo "---LOG---"
-sudo cat /var/log/apache2/error.log
+sudo cat /var/log/apache2/travis_error.log
 
 
 exit 0

@@ -1,7 +1,7 @@
 <VirtualHost *:80>
     SuexecUserGroup "#UID" "#GID"
     ServerName travis.local
-    ServerAlias www.travis.local
+    ServerAlias www.VHOST_FQDN
     ServerAdmin webmaster@localhost
 
     DocumentRoot PATH
