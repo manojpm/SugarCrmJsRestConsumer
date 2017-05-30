@@ -11,7 +11,7 @@ cache:
     - $HOME/.composer/cache
 
 env:
-  - SH=bash
+  SH: bash
   global:
     - VHOST_FILE="apache.vhost"
     - PHP_INI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php.ini"
