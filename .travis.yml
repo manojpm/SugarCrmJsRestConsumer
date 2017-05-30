@@ -14,7 +14,14 @@ env:
     - VHOST_FILE="apache.vhost"
     - PHP_INI_FILE="%TRAVIS_BUILD_DIR%/test/.travis/php.ini"
 
+addons:
+  apt:
+    sources:
+    packages:
+    - links
+
 before_install:
+  - sudo apt-get -qq update
   - sudo apt-get install -y software-properties-common
   - sudo add-apt-repository ppa:ondrej/php -y
   - sudo add-apt-repository ppa:ondrej/apache2 -y
