@@ -5,12 +5,12 @@ REPOPATH="$(pwd)"       # /home/travis/build/adamjakab/SugarCrmJsRestConsumer
 HTTPPATH="/home/travis//httpdocs"   # /home/travis/httpdocs
 
 # Init & Install packages
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository ppa:ondrej/php -y
-sudo add-apt-repository ppa:ondrej/apache2 -y
-sudo apt-get update
-sudo apt-get install -y apache2 libapache2-mod-php5.6 \
-    php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
+#sudo apt-get install -y software-properties-common
+#sudo add-apt-repository ppa:ondrej/php -y
+#sudo add-apt-repository ppa:ondrej/apache2 -y
+#sudo apt-get update
+#sudo apt-get install -y apache2 libapache2-mod-php5.6 \
+#    php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
 
 # Get SuiteCRM
 mkdir ${HTTPPATH}
@@ -53,7 +53,6 @@ sudo service apache2 restart
 wget -qO- http://localhost
 
 
-echo ${CUSTOM_VAR}
 
 #- echo "export PATH=/home/vagrant/.phpenv/bin:$PATH" | sudo tee -a /etc/apache2/envvars > /dev/null
 #- echo "$(curl -fsSL https://gist.github.com/roderik/16d751c979fdeb5a14e3/raw/gistfile1.txt)" | sudo tee /etc/apache2/conf.d/phpconfig > /dev/null

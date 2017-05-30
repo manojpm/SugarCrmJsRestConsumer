@@ -20,24 +20,25 @@ addons:
       - sourceline: 'deb http://ppa.launchpad.net/ondrej/php/ubuntu trusty main'
         key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x4F4EA0AAE5267A6C'
     packages:
-      - links
+      - apache2
+      - libapache2-mod-fcgid
+      - php5.6-cli
+      - php5.6-cgi
+      - php5.6-curl
+      - php5.6-gd
+      - php5.6-intl
+      - php5.6-json
+      - php5.6-mcrypt
+      - php5.6-mbstring
+      - php5.6-mysql
+      - php5.6-xml
 
 before_install:
-#  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E5267A6C
-#  - sudo apt-get -qq update
-#  - sudo apt-get install -y software-properties-common
-#  - sudo add-apt-repository ppa:ondrej/php -y
-#  - sudo add-apt-repository ppa:ondrej/apache2 -y
-#  - sudo apt-get -qq update
 
 install:
-  - sudo apt-cache search php5.6
-#  - sudo apt-get install -y php5.6-cli php5.6-cgi php5.6-curl php5.6-gd php5.6-intl php5.6-json php5.6-mcrypt php5.6-mbstring php5.6-mysql php5.6-xml
-#  - sudo apt-get install -y apache2 libapache2-mod-fcgid
 
 before_script:
-
-#  - test/.travis/before_script.sh
+  - test/.travis/before_script.sh
 
 script:
 #  - npm test
