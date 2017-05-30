@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+echo "---CONF---"
 sudo cat /etc/apache2/sites-available/000-default.conf
-ls -la home/travis/httpdocs
+ls -la /home/travis/httpdocs
 
-
+echo "---REQ---"
 wget -qO- http://localhost
-cat /var/log/apache2/error.log
+
+echo "---LOG---"
+sudo cat /var/log/apache2/error.log
 
 
 exit 0
