@@ -23,7 +23,7 @@ env:
 #    - PHP_FCGI_FILE="$TRAVIS_BUILD_DIR/test/.travis/php5.fcgi"
 
     - VHOST_DEF_CONF="/etc/apache2/sites-available/001-travis.conf"
-    - PHP_INI_FILE="/etc/php5/cgi/php.ini"
+    - PHP_INI_FILE="/etc/php/5.6/cgi/php.ini"
 
 addons:
   apt:
