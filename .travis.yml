@@ -78,7 +78,8 @@ before_script:
   - echo "127.0.0.1       $VHOST_FQDN" | sudo tee -a /etc/hosts
 
   # Configure Mysql
-  - mysql -u root -e 'CREATE DATABASE suitecrm;'
+  - mysql -u root -e "CREATE USER 'sugar'@'localhost' IDENTIFIED BY 'salt'"
+  - mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'sugar'@'localhost' WITH GRANT OPTION;"
 
   # Setup VHost folder content
   # - cp $TRAVIS_BUILD_DIR/test/.travis/index.php $VHOST_FOLDER
