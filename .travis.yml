@@ -25,6 +25,7 @@ addons:
         key_url: 'http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x4F4EA0AAE5267A6C'
     packages:
       - apache2
+      - apache2-suexec-custom
       - libapache2-mod-fcgid
       - php5.6-cgi
       - php5.6-cli
