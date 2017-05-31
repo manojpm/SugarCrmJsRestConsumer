@@ -17,8 +17,8 @@ module.exports = function(config)
         "bradipo.local": {
             crm_url: "http://gsi.crm.mekit.it",
             crm_rest_version: "v4_1",
-            crm_username: "user1",
-            crm_password: "user1"
+            crm_username: "admin",
+            crm_password: "admin"
         }
     };
 

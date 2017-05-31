@@ -2,10 +2,10 @@ define(['underscore', 'bluebird', 'SugarCrmJsRestConsumer'],
     function(_, Promise, SugarCrmJsRestConsumer)
     {
         var sugar
-            , crm_url = 'http://gsi.crm.mekit.it'
-            , crm_rest_version = 'v4_1'
-            , username = 'admin'
-            , password = 'admin'
+            , crm_url = __karma__.config.__TESTVARS__["crm_url"]
+            , crm_rest_version = __karma__.config.__TESTVARS__["crm_rest_version"]
+            , username = __karma__.config.__TESTVARS__["crm_username"]
+            , password = __karma__.config.__TESTVARS__["crm_password"]
             , moduleToTest = 'Contacts'
             , timeout_ms = 30 * 1000
             ;

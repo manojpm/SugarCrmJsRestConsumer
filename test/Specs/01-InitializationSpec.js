@@ -10,7 +10,6 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
         beforeAll(function()
         {
             sugar = new SugarCrmJsRestConsumer(crm_url, crm_rest_version);
-            console.log(__karma__.config.__TESTVARS__);
         });
 
         describe("Initialization", function()

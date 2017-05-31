@@ -88,12 +88,14 @@ before_install:
     - php composer.phar install --no-interaction
     - php tests/testinstall.php
 
+    # Just making sure we are back in the build directory for install
+      cd $TRAVIS_BUILD_DIR
+
 install:
-  # Use default
+  # default
 
 before_script:
-  # Just making sure we are back in the build directory
-  cd $TRAVIS_BUILD_DIR
+  # default
 
 script:
   - npm test
