@@ -2,14 +2,15 @@ define(['underscore', 'SugarCrmJsRestConsumer'],
     function(_, SugarCrmJsRestConsumer)
     {
         var sugar
-            , crm_url = 'http://gsi.crm.mekit.it'
-            , crm_rest_version = 'v4_1'
+            , crm_url = __karma__.config.__TESTVARS__["crm_url"]
+            , crm_rest_version = __karma__.config.__TESTVARS__["crm_rest_version"]
             , session_id = ''
             ;
 
         beforeAll(function()
         {
             sugar = new SugarCrmJsRestConsumer(crm_url, crm_rest_version);
+            console.log(__karma__.config.__TESTVARS__);
         });
 
         describe("Initialization", function()

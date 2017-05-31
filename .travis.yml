@@ -21,6 +21,7 @@ env:
     - PHP_INI_FILE="/etc/php/5.6/cgi/php.ini"
 
 addons:
+  hostname: travis.local
   apt:
     sources:
       - sourceline: 'deb http://ppa.launchpad.net/ondrej/php/ubuntu trusty main'

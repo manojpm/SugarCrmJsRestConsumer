@@ -1,11 +1,43 @@
 // Karma configuration
-module.exports = function(config) {
+module.exports = function(config)
+{
+    var _testvars_ = {
+        default: {
+            crm_url: "http://localhost",
+            crm_rest_version: "v4_1",
+            crm_username: "admin",
+            crm_password: "admin"
+        },
+        "travis.local": {
+            crm_url: "http://travis.local",
+            crm_rest_version: "v4_1",
+            crm_username: "admin",
+            crm_password: "admin"
+        },
+        "bradipo.local": {
+            crm_url: "http://gsi.crm.mekit.it",
+            crm_rest_version: "v4_1",
+            crm_username: "user1",
+            crm_password: "user1"
+        }
+    };
+
+    var getTestVariablesByHostname = function()
+    {
+        var _ = require("underscore");
+        var os = require("os");
+        var hostname = os.hostname();
+        var key = _.has(_testvars_, hostname) ? hostname : 'default';
+        console.log("---USING TEST VARIABLES KEY[hostname: "+hostname+"]: " + key);
+        return _testvars_[key];
+    };
+
     config.set({
 
-        // base path that will be used to resolve all patterns (eg. files, exclude)
+        // Base path to use to resolve all patterns (eg. files, exclude)
         basePath: '',
 
-        // Which plugins to enable
+        // Plugins to enable
         plugins: [
             "karma-phantomjs-launcher",
             "karma-chrome-launcher",
@@ -14,12 +46,11 @@ module.exports = function(config) {
             "karma-js-coverage"
         ],
 
-        // frameworks to use
-        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+        // Frameworks to use - available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine', 'requirejs'],
 
 
-        // list of files / patterns to load in the browser
+        // List of files to load in the browser
         files: [
             'test/karma.boot.js',
             'node_modules/babel-polyfill/dist/polyfill.min.js',
@@ -29,37 +60,31 @@ module.exports = function(config) {
             {pattern: 'node_modules/qs/dist/qs.js', included: false, watched: false},
             {pattern: 'node_modules/blueimp-md5/js/md5.min.js', included: false, watched: false},
 
-            {pattern: 'test/Specs/**/*.js', included: false, watched: true},
+            {pattern: 'test/Specs/**/*Spec.js', included: false, watched: true},
 
             {pattern: 'SugarCrmJsRestConsumer.js', included: false, watched: true}
         ],
 
-        // list of files to exclude
+        // List of files to exclude from loading into browser
         exclude: [],
 
 
-        // preprocess matching files before serving them to the browser
-        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        // Preprocessors to use - available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
             'SugarCrmJsRestConsumer.js': ['coverage']
         },
 
 
-        // test results reporter to use
-        // possible values: 'dots', 'progress'
-        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        // Reporters to use - ('dots'|'progress') - available reporters: https://npmjs.org/browse/keyword/karma-reporter
         reporters: ['progress', 'dots'],
 
-        // web server port
+        // Web server port
         port: 9876,
 
+        // Enable / disable colors in the output (reporters and logs)
+        colors: false,
 
-        // enable / disable colors in the output (reporters and logs)
-        colors: true,
-
-
-        // level of logging
-        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        // Logging level: "config.(LOG_DISABLE|LOG_ERROR|LOG_WARN|LOG_INFO|LOG_DEBUG)"
         logLevel: config.LOG_ERROR,
 
 
@@ -84,6 +109,11 @@ module.exports = function(config) {
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: true
+        singleRun: true,
+
+        // Variables for client
+        client: {
+            __TESTVARS__: getTestVariablesByHostname()
+        }
     });
 };

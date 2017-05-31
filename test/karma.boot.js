@@ -2,7 +2,7 @@
 
 //define test spec files to be loaded
 var additionalSpecFilter = new RegExp('');
-//additionalSpecFilter = new RegExp('/01-');
+additionalSpecFilter = new RegExp('/01-');
 var specs = [];
 for (var file in window.__karma__.files) {
     if (window.__karma__.files.hasOwnProperty(file))
@@ -21,7 +21,6 @@ for (var file in window.__karma__.files) {
 requirejs.config({
     baseUrl: '/base',
     paths: {
-        /* PATHS */
         /* MODULES */
         underscore: 'node_modules/underscore/underscore-min',
         bluebird: 'node_modules/bluebird/js/browser/bluebird.min',
