@@ -1,4 +1,5 @@
 # Do not include these in npm package
+.idea/
 test/
 .gitignore
 .jshintrc
