@@ -62,10 +62,11 @@ before_install:
   # Configure Apache
   - sudo a2enmod alias actions rewrite fcgid suexec include
   - sudo cp -f $TRAVIS_BUILD_DIR/test/.travis/apache.vhost $VHOST_DEF_CONF
-  - sudo sed -e "s,PATH,$VHOST_FOLDER,g" --in-place $VHOST_DEF_CONF
-  - sudo sed -e "s,UID,$UID,g" --in-place $VHOST_DEF_CONF
-  - sudo sed -e "s,GID,$GROUPS,g" --in-place $VHOST_DEF_CONF
+  - sudo sed -e "s,VHOST_UID,$UID,g" --in-place $VHOST_DEF_CONF
+  - sudo sed -e "s,VHOST_GID,$GROUPS,g" --in-place $VHOST_DEF_CONF
   - sudo sed -e "s,VHOST_FQDN,$VHOST_FQDN,g" --in-place $VHOST_DEF_CONF
+  - sudo sed -e "s,VHOST_FOLDER,$VHOST_FOLDER,g" --in-place $VHOST_DEF_CONF
+  - sudo sed -e "s,FCGI_FOLDER,$FCGI_FOLDER,g" --in-place $VHOST_DEF_CONF
   - sudo a2ensite 001-travis
   - sudo service apache2 restart
 

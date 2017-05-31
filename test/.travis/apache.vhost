@@ -1,26 +1,25 @@
 <VirtualHost *:80>
-    SuexecUserGroup "#UID" "#GID"
+    SuexecUserGroup "#VHOST_UID" "#VHOST_GID"
     ServerName VHOST_FQDN
     ServerAlias www.VHOST_FQDN
     ServerAdmin webmaster@localhost
 
-    DocumentRoot PATH
+    DocumentRoot VHOST_FOLDER
 
-    # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
     LogLevel warn
     ErrorLog ${APACHE_LOG_DIR}/travis_error.log
     CustomLog ${APACHE_LOG_DIR}/travis_access.log combined
 
     DirectoryIndex index.php index.html index.htm
 
-    <Directory PATH >
+    <Directory VHOST_FOLDER >
             Options +Indexes +SymLinksIfOwnerMatch +ExecCGI
             AllowOverride All Options=ExecCGI,Includes,IncludesNOEXEC,Indexes,MultiViews,SymLinksIfOwnerMatch,FollowSymLinks
             Order allow,deny
             allow from all
             AddType application/x-httpd-php .php
             AddHandler fcgid-script .php
-            FCGIWrapper /var/www/fcgi-bin/php5.fcgi .php
+            FCGIWrapper FCGI_FOLDER/php5.fcgi .php
     </Directory>
 
     FcgidMaxRequestLen 1073741824
