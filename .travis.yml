@@ -16,8 +16,8 @@ env:
     - WWW_FOLDER="/var/www"
     - VHOST_FQDN="travis.local"
     - VHOST_FOLDER="$WWW_FOLDER/travis"
-    - FCGI_FOLDER="$WWW_FOLDER/fcgi-bin"
     - VHOST_DEF_CONF="/etc/apache2/sites-available/001-travis.conf"
+    - FCGI_FOLDER="$WWW_FOLDER/fcgi-bin"
     - PHP_INI_FILE="/etc/php/5.6/cgi/php.ini"
 
 addons:
@@ -49,7 +49,7 @@ before_install:
   - sudo mkdir $VHOST_FOLDER
   - sudo chown $USER:$USER $VHOST_FOLDER
 
-  # Setup FCGID folder
+  # Setup FCGID folder and script
   - sudo mkdir $FCGI_FOLDER
   - sudo chown $USER:$USER $FCGI_FOLDER
   - sudo chmod 755 $FCGI_FOLDER
@@ -59,7 +59,7 @@ before_install:
   # Setup php
   - sudo cp -f $TRAVIS_BUILD_DIR/test/.travis/php.ini $PHP_INI_FILE
 
-  # Configure Apache
+  # Configure Apache and VHost
   - sudo a2enmod alias actions rewrite fcgid suexec include
   - sudo cp -f $TRAVIS_BUILD_DIR/test/.travis/apache.vhost $VHOST_DEF_CONF
   - sudo sed -e "s,VHOST_UID,$UID,g" --in-place $VHOST_DEF_CONF

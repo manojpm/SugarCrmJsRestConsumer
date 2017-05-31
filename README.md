@@ -29,29 +29,36 @@ Using npm:
 $ npm install sugarcrm-js-rest-consumer
 ```
 
-## Example
+## Examples
+
+### Login
 
 ```js
-// Log in and create a new record in Contacts module 
-var sugar = new SugarCrmJsRestConsumer("http://my.crm.deployment.com", "v4_1");
+var sugar = new SugarCrmJsRestConsumer(crm_host, "v4_1");
 sugar.login("admin", "password")
     .then(function()
     {
-        sugar.setEntry("Contacts", false, {last_name: "Lee", first_name: "Bruce"})
-            .then(function(response)
-            {
-                console.log("SAVED WITH ID: " + response["id"]);
-            })
-            .catch(function(err)
-            {
-                console.error(error);
-            });
+        // You are logged in
     })
     .catch(function(error)
     {
         console.error(error);
     });
 
+```
+
+### Create a new record in Contacts module 
+
+```js 
+    sugar.setEntry("Contacts", false, {last_name: "Lee", first_name: "Bruce"})
+        .then(function(response)
+        {
+            console.log("SAVED WITH ID: " + response["id"]);
+        })
+        .catch(function(err)
+        {
+            console.error(error);
+        });
 ```
 
 ## Other
