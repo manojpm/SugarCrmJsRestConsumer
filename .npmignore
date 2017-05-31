@@ -1,0 +1,6 @@
+# Do not include these in npm package
+test/
+.gitignore
+.jshintrc
+.travis.yml
+karma.conf.js
