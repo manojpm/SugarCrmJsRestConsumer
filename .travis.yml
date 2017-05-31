@@ -101,6 +101,7 @@ before_script:
   - $TRAVIS_BUILD_DIR/test/.travis/before_script.sh
 
 script:
+  - cd $TRAVIS_BUILD_DIR
   - npm test
 
 services:
