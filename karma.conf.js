@@ -28,7 +28,6 @@ module.exports = function(config)
         var os = require("os");
         var hostname = os.hostname();
         var key = _.has(_testvars_, hostname) ? hostname : 'default';
-        console.log("---USING TEST VARIABLES KEY[hostname: "+hostname+"]: " + key);
         return _testvars_[key];
     };
 
