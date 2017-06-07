@@ -10,7 +10,7 @@
         , qs = require("qs")
         , Promise = require("bluebird")
         , axios = require("axios")
-        , md5 = require("md5")
+        , md5 = require("blueimp-md5")
         ;
 
     /**

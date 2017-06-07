@@ -22,20 +22,18 @@ requirejs.config({
     baseUrl: '/base',
     paths: {
         /* MODULES */
-        underscore: 'node_modules/underscore/underscore-min',
-        bluebird: 'node_modules/bluebird/js/browser/bluebird.min',
-        axios: 'node_modules/axios/dist/axios.min',
-        qs: 'node_modules/qs/dist/qs',
-        md5: 'node_modules/blueimp-md5/js/md5.min'
+        'underscore':     'node_modules/underscore/underscore-min',
+        'bluebird':       'node_modules/bluebird/js/browser/bluebird.min',
+        'axios':          'node_modules/axios/dist/axios.min',
+        'qs':             'node_modules/qs/dist/qs',
+        'blueimp-md5':    'node_modules/blueimp-md5/js/md5.min'
     },
     shim: {
         SugarCrmJsRestConsumer: {
-            deps: ["underscore", "bluebird", "axios", "qs", "md5"]
+            deps: ["underscore", "bluebird", "axios", "qs", "blueimp-md5"]
         }
     },
-    deps: [
-        /*"underscore"*/
-    ]
+    deps: []
 });
 
 
