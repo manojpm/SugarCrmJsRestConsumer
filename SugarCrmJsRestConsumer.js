@@ -18,7 +18,7 @@
      * @param {string} url
      * @param {string} version
      */
-    function SugarCrmJsRestConsumer(url, version)
+    function SugarCrmJsRestConsumer(url, version, session_id)
     {
         if (_.isNull(url) || _.isEmpty(url)) {
             throw new Error("Parameter 'url' must be provided!");
@@ -36,7 +36,7 @@
         var crm_url = url;
         var api_version = version;
         var api_url = crm_url + '/service/' + api_version + '/rest.php';
-        var session_id = null;
+        var session_id = session_id;
         var authenticated_user = null;
 
         /**
@@ -45,8 +45,7 @@
         var axiosDefaultConfig = {
             method: "post",
             responseType: 'json',
-            timeout: 5000,
-            headers: {'User-Agent': 'sugarcrm-js-rest-consumer'},
+            timeout: 7000,
             transformRequest: [],
             transformResponse: [],
             withCredentials: false,
