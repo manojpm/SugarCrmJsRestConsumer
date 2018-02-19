@@ -6,6 +6,7 @@
  */
 (function()
 {
+  'use strict';
     var _ = require("underscore")
         , qs = require("qs")
         , Promise = require("bluebird")
@@ -18,7 +19,7 @@
      * @param {string} url
      * @param {string} version
      */
-    function SugarCrmJsRestConsumer(url, version, session_id)
+    function SugarCrmJsRestConsumer(url, version, sessionId)
     {
         if (_.isNull(url) || _.isEmpty(url)) {
             throw new Error("Parameter 'url' must be provided!");
@@ -36,7 +37,7 @@
         var crm_url = url;
         var api_version = version;
         var api_url = crm_url + '/service/' + api_version + '/rest.php';
-        var session_id = session_id;
+        var session_id = sessionId;
         var authenticated_user = null;
 
         /**
@@ -397,6 +398,138 @@
                     .then(function(response)
                     {
                         response = self.fixEntryListInResponse(response);
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+         /**
+         * Retrieves a specific relationship link for a specified record.
+         * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.9/Integration/Web_Services/v1_-_v4.1/Methods/get_relationships/
+         *
+         * @param {String}      module_name
+         * @param {String}      id
+         * @param {String}      link_field_name
+         * @param {Object}      [parameters]
+         * @param {String}      [parameters.related_module_query]
+         * @param {Array}       [parameters.related_fields]
+         * @param {Array}       [parameters.related_module_link_name_to_fields_array]
+         * @param {Integer}     [parameters.deleted]
+         * @param {String}      [parameters.order_by]
+         * @param {Integer}     [parameters.offset]
+         * @param {Integer}     [parameters.limit]
+         *
+         * @return {Promise}
+         */
+        this.getRelationships = function(module_name, id, link_field_name, parameters)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+                if (_.isNull(module_name) || _.isEmpty(module_name)) {
+                    return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+                if (_.isNull(id) || _.isEmpty(id) || !_.isString(id)) {
+                    return reject(new Error("Parameter 'id' must be provided!"));
+                }
+                if (_.isNull(link_field_name) || _.isEmpty(link_field_name) || !_.isString(link_field_name)) {
+                    return reject(new Error("Parameter 'link_field_name' must be provided!"));
+                }
+
+
+                var method = 'get_relationships';
+                var methodParams = {
+                    session: session_id,
+                    module_name: module_name,
+                    module_id: id,
+                    link_field_name: link_field_name,
+                    related_fields: [],
+                    related_module_query: '',
+                    related_module_link_name_to_fields_array: [],
+                    order_by: '',
+                    offset: 0,
+                    limit: 20,
+                    deleted: false
+                };
+                methodParams = self.mapObjectProperties(methodParams, parameters);
+
+                self.post(method, methodParams)
+                    .then(function(response)
+                    {
+                        response = self.fixEntryListInResponse(response);
+                        fulfill(response);
+                    })
+                    .catch(function(error)
+                    {
+                        return reject(error);
+                    })
+                ;
+            });
+        };
+
+        /**
+        * Sets relationships between two records. You can relate multiple records to a single record using this.
+        * @see http://support.sugarcrm.com/Documentation/Sugar_Developer/Sugar_Developer_Guide_7.9/Integration/Web_Services/v1_-_v4.1/Methods/set_relationship/
+        *
+        *
+        * @param {String}      module_name
+        * @param {String}      id
+        * @param {String}      link_field_name
+        * @param {Object}      [parameters]
+        * @param {Array}       [parameters.related_ids]
+        * @param {Array}       [parameters.name_value_list]
+        * @param {Integer}     [parameters.delete]
+        *
+        * @return {Promise}
+         */
+        this.setRelationship = function(module_name, id, link_field_name, related_ids, parameters)
+        {
+            return new Promise(function(fulfill, reject)
+            {
+
+                if (_.isNull(module_name) || _.isEmpty(module_name)) {
+                  return reject(new Error("Parameter 'module_name' must be provided!"));
+                }
+                if (_.isNull(id) || _.isEmpty(id) || !_.isString(id)) {
+                  return reject(new Error("Parameter 'id' must be provided!"));
+                }
+                if (_.isNull(link_field_name) || _.isEmpty(link_field_name) || !_.isString(link_field_name)) {
+                  return reject(new Error("Parameter 'link_field_name' must be provided!"));
+                }
+                if (_.isNull(related_ids) || _.isEmpty(related_ids) || !_.isArray(related_ids)) {
+                  return reject(new Error("Parameter 'related_ids' must be provided!"));
+                }
+                if (parameters === undefined) {
+                  parameters = {name_value_list: [], delete: false};
+                }
+                var nameValueList = [];//self.nameValueListCompile(parameters);
+                _.each(parameters.name_value_list, function(entry)
+                {
+                    nameValueList.push(self.nameValueListCompile(entry));
+                });
+
+                console.log('set_relationship');
+                console.log(session_id, module_name, id);
+                var method = 'set_relationship';
+                var methodParams = {
+                    session: session_id,
+                    module_name: module_name,
+                    module_id: id,
+                    link_field_name: link_field_name,
+                    related_ids: related_ids,
+                    name_value_list: nameValueList,
+                    delete: parameters.delete
+                };
+
+                //console.log(JSON.stringify(nameValueList));
+
+                self.post(method, methodParams)
+                    .then(function(response)
+                    {
                         fulfill(response);
                     })
                     .catch(function(error)
