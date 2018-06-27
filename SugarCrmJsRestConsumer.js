@@ -512,8 +512,6 @@
                     nameValueList.push(self.nameValueListCompile(entry));
                 });
 
-                console.log('set_relationship');
-                console.log(session_id, module_name, id);
                 var method = 'set_relationship';
                 var methodParams = {
                     session: session_id,
